@@ -100,10 +100,10 @@
   </div>
 
   <script>
-    let menuData = [];
-    let custCart = [];
-    let activeCategory = "ALL";
-    let customerTable = null;
+    var menuData = [];
+    var custCart = [];
+    var activeCategory = "ALL";
+    var customerTable = null;
 
     window.onload = function() {
       detectTableFromUrl();
@@ -111,22 +111,22 @@
     };
 
     function detectTableFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      const tbl = params.get('table');
+      var params = new URLSearchParams(window.location.search);
+      var tbl = params.get('table');
       if (tbl) {
         setTableNumber(tbl);
       }
     }
 
     function confirmTableNumber() {
-      const val = document.getElementById('custTableInput').value.trim();
+      var val = document.getElementById('custTableInput').value.trim();
       if (!val) { alert('Please enter your table number.'); return; }
       setTableNumber(val);
     }
 
     function setTableNumber(tbl) {
       customerTable = tbl;
-      document.getElementById('displayTableNum').innerText = `#${tbl}`;
+      document.getElementById('displayTableNum').innerText = '#' + tbl;
       document.getElementById('tableModal').classList.add('hidden');
     }
 
@@ -144,70 +144,83 @@
     }
 
     function renderCategoryPills() {
-      const cats = ["ALL", ...new Set(menuData.map(i => i.category))];
-      const container = document.getElementById('categoryTabs');
-      container.innerHTML = cats.map(c => `
-        <button onclick="filterCategory('${c}')" id="cat-btn-${c}" class="cat-btn ${c === activeCategory ? 'bg-[#58111A] text-[#FDFBF7]' : 'bg-[#FDFBF7] text-[#58111A]'} border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap">${c}</button>
-      `).join('');
+      var cats = ["ALL"];
+      for (var i = 0; i < menuData.length; i++) {
+        if (menuData[i].category && cats.indexOf(menuData[i].category) === -1) {
+          cats.push(menuData[i].category);
+        }
+      }
+
+      var container = document.getElementById('categoryTabs');
+      container.innerHTML = cats.map(function(c) {
+        var activeClass = (c === activeCategory) ? 'bg-[#58111A] text-[#FDFBF7]' : 'bg-[#FDFBF7] text-[#58111A]';
+        return '<button onclick="filterCategory(\'' + c + '\')" id="cat-btn-' + c.replace(/[^a-zA-Z0-9]/g, '_') + '" class="cat-btn ' + activeClass + ' border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap">' + c + '</button>';
+      }).join('');
     }
 
     function filterCategory(cat) {
       activeCategory = cat;
-      document.querySelectorAll('.cat-btn').forEach(b => {
+      var buttons = document.querySelectorAll('.cat-btn');
+      buttons.forEach(function(b) {
         b.className = "cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap";
       });
-      const activeBtn = document.getElementById(`cat-btn-${cat}`);
-      if(activeBtn) activeBtn.className = "cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm";
+      var activeBtn = document.getElementById('cat-btn-' + cat.replace(/[^a-zA-Z0-9]/g, '_'));
+      if (activeBtn) activeBtn.className = "cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm";
       renderCustomerMenu();
     }
 
     function renderCustomerMenu() {
-      const container = document.getElementById('customerMenuList');
-      const filtered = menuData.filter(i => activeCategory === "ALL" || i.category === activeCategory);
+      var container = document.getElementById('customerMenuList');
+      var filtered = menuData.filter(function(i) {
+        return activeCategory === "ALL" || i.category === activeCategory;
+      });
 
-      container.innerHTML = filtered.map(item => {
-        const cartItem = custCart.find(c => c.id === item.id);
-        const qty = cartItem ? cartItem.qty : 0;
-        return `
-          <div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-3 flex justify-between items-center rounded-sm shadow-xs">
-            <div class="flex-1 pr-3">
-              <div class="flex items-center gap-1.5">
-                <span class="inline-block w-2 h-2 rounded-full ${item.veg ? 'bg-green-600' : 'bg-red-600'}"></span>
-                <h3 class="font-bold text-xs text-[#58111A]">${item.name}</h3>
-              </div>
-              <p class="text-[9px] text-[#C5A059] uppercase font-bold mt-0.5">${item.category}</p>
-              <p class="text-xs font-bold text-[#1A1A1A] mt-1">₹${item.price.toFixed(2)}</p>
-            </div>
+      container.innerHTML = filtered.map(function(item) {
+        var cartItem = custCart.find(function(c) { return c.id === item.id; });
+        var qty = cartItem ? cartItem.qty : 0;
+        var dotColor = item.veg ? 'bg-green-600' : 'bg-red-600';
 
-            <div>
-              ${qty > 0 ? `
-                <div class="flex items-center border border-[#C5A059] bg-[#FDFBF7]">
-                  <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 font-bold text-[#58111A]">-</button>
-                  <span class="w-6 text-center font-bold text-xs">${qty}</span>
-                  <button onclick="updateQty('${item.id}', 1)" class="w-6 h-6 font-bold text-[#58111A]">+</button>
-                </div>
-              ` : `
-                <button onclick="updateQty('${item.id}', 1)" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase">
-                  + Add
-                </button>
-              `}
-            </div>
-          </div>
-        `;
+        var actionMarkup = (qty > 0)
+          ? '<div class="flex items-center border border-[#C5A059] bg-[#FDFBF7]">' +
+              '<button onclick="updateQty(\'' + item.id + '\', -1)" class="w-6 h-6 font-bold text-[#58111A]">-</button>' +
+              '<span class="w-6 text-center font-bold text-xs">' + qty + '</span>' +
+              '<button onclick="updateQty(\'' + item.id + '\', 1)" class="w-6 h-6 font-bold text-[#58111A]">+</button>' +
+            '</div>'
+          : '<button onclick="updateQty(\'' + item.id + '\', 1)" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase">' +
+              '+ Add' +
+            '</button>';
+
+        return '<div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-3 flex justify-between items-center rounded-sm shadow-xs">' +
+          '<div class="flex-1 pr-3">' +
+            '<div class="flex items-center gap-1.5">' +
+              '<span class="inline-block w-2 h-2 rounded-full ' + dotColor + '"></span>' +
+              '<h3 class="font-bold text-xs text-[#58111A]">' + item.name + '</h3>' +
+            '</div>' +
+            '<p class="text-[9px] text-[#C5A059] uppercase font-bold mt-0.5">' + item.category + '</p>' +
+            '<p class="text-xs font-bold text-[#1A1A1A] mt-1">₹' + item.price.toFixed(2) + '</p>' +
+          '</div>' +
+          '<div>' + actionMarkup + '</div>' +
+        '</div>';
       }).join('');
     }
 
     function updateQty(id, delta) {
-      const item = menuData.find(i => i.id === id);
-      const exist = custCart.find(c => c.id === id);
+      var item = menuData.find(function(i) { return i.id === id; });
+      var exist = custCart.find(function(c) { return c.id === id; });
 
       if (exist) {
         exist.qty += delta;
         if (exist.qty <= 0) {
-          custCart = custCart.filter(c => c.id !== id);
+          custCart = custCart.filter(function(c) { return c.id !== id; });
         }
       } else if (delta > 0) {
-        custCart.push({ ...item, qty: 1 });
+        custCart.push({
+          id: item.id,
+          category: item.category,
+          name: item.name,
+          price: item.price,
+          qty: 1
+        });
       }
 
       renderCustomerMenu();
@@ -215,12 +228,12 @@
     }
 
     function syncCartTotals() {
-      const totalItems = custCart.reduce((sum, i) => sum + i.qty, 0);
-      const totalCost = custCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      var totalItems = custCart.reduce(function(sum, i) { return sum + i.qty; }, 0);
+      var totalCost = custCart.reduce(function(sum, i) { return sum + (i.price * i.qty); }, 0);
 
       document.getElementById('cartCount').innerText = totalItems;
-      document.getElementById('cartTotal').innerText = `₹${totalCost.toFixed(2)}`;
-      document.getElementById('drawerTotalSum').innerText = `₹${totalCost.toFixed(2)}`;
+      document.getElementById('cartTotal').innerText = '₹' + totalCost.toFixed(2);
+      document.getElementById('drawerTotalSum').innerText = '₹' + totalCost.toFixed(2);
 
       renderDrawerList();
     }
@@ -235,28 +248,28 @@
     }
 
     function renderDrawerList() {
-      const container = document.getElementById('drawerCartList');
+      var container = document.getElementById('drawerCartList');
       if (custCart.length === 0) {
-        container.innerHTML = `<p class="text-xs text-center text-gray-400 py-6">No items selected</p>`;
+        container.innerHTML = '<p class="text-xs text-center text-gray-400 py-6 font-bold">No items selected</p>';
         return;
       }
 
-      container.innerHTML = custCart.map(i => `
-        <div class="flex justify-between items-center text-xs py-1 border-b border-gray-100">
-          <div>
-            <p class="font-bold text-[#58111A]">${i.name}</p>
-            <p class="text-[10px] text-gray-500">₹${i.price} × ${i.qty}</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="flex items-center border border-[#C5A059]">
-              <button onclick="updateQty('${i.id}', -1)" class="w-5 h-5 text-center font-bold">-</button>
-              <span class="w-5 text-center font-bold text-[11px]">${i.qty}</span>
-              <button onclick="updateQty('${i.id}', 1)" class="w-5 h-5 text-center font-bold">+</button>
-            </div>
-            <span class="font-bold text-[#58111A] min-w-[50px] text-right">₹${(i.price * i.qty).toFixed(2)}</span>
-          </div>
-        </div>
-      `).join('');
+      container.innerHTML = custCart.map(function(i) {
+        return '<div class="flex justify-between items-center text-xs py-1 border-b border-gray-100">' +
+          '<div>' +
+            '<p class="font-bold text-[#58111A]">' + i.name + '</p>' +
+            '<p class="text-[10px] text-gray-500">₹' + i.price + ' × ' + i.qty + '</p>' +
+          '</div>' +
+          '<div class="flex items-center gap-2">' +
+            '<div class="flex items-center border border-[#C5A059]">' +
+              '<button onclick="updateQty(\'' + i.id + '\', -1)" class="w-5 h-5 text-center font-bold">-</button>' +
+              '<span class="w-5 text-center font-bold text-[11px]">' + i.qty + '</span>' +
+              '<button onclick="updateQty(\'' + i.id + '\', 1)" class="w-5 h-5 text-center font-bold">+</button>' +
+            '</div>' +
+            '<span class="font-bold text-[#58111A] min-w-[50px] text-right">₹' + (i.price * i.qty).toFixed(2) + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
     }
 
     function placeCustomerOrder() {
@@ -266,12 +279,12 @@
         return;
       }
 
-      const totalCost = custCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      const btn = document.getElementById('btnPlaceOrder');
+      var totalCost = custCart.reduce(function(sum, i) { return sum + (i.price * i.qty); }, 0);
+      var btn = document.getElementById('btnPlaceOrder');
       btn.innerText = "Transmitting Order...";
       btn.disabled = true;
 
-      const orderData = {
+      var orderData = {
         table: customerTable,
         items: custCart,
         total: totalCost,
@@ -280,10 +293,15 @@
 
       google.script.run
         .withSuccessHandler(function(res) {
+          try {
+            var channel = new BroadcastChannel('moncher_order_stream');
+            channel.postMessage('NEW_ORDER_SYNC');
+          } catch(e){}
+
           btn.innerText = "Confirm & Send To Kitchen";
           btn.disabled = false;
           closeCartDrawer();
-          document.getElementById('successOrderId').innerText = `Ticket #${res.orderId}`;
+          document.getElementById('successOrderId').innerText = 'Ticket #' + res.orderId;
           document.getElementById('successModal').classList.remove('hidden');
         })
         .withFailureHandler(function(err) {
