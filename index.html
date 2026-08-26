@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MONCHER - Restaurant Management System</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Montserrat', sans-serif; background: #FDFBF7; color: #1A1A1A; }
-    .font-serif-classic { font-family: 'Playfair Display', serif; }
-    /* Custom Scrollbars */
+    body { font-family: 'Lato', sans-serif; background: #FDFBF7; color: #1A1A1A; }
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 4px; }
     ::-webkit-scrollbar-track { background: #FAF6F0; }
@@ -20,22 +18,20 @@
   <!-- Header -->
   <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-3 flex justify-between items-center shadow-sm shrink-0">
     <div>
-      <h1 class="font-serif-classic text-xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
+      <h1 class="text-xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
       <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-semibold">Fine Dining & Lounge</p>
     </div>
     
-    <!-- Navigation Tabs -->
-    <nav class="flex gap-2">
-      <button onclick="switchTab('billing')" id="tab-billing" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]">
-        Billing & POS
-      </button>
-      <button onclick="switchTab('kitchen')" id="tab-kitchen" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]">
-        Kitchen KDS
-      </button>
-      <button onclick="switchTab('tables')" id="tab-tables" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]">
-        Table Status
-      </button>
-    </nav>
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <span class="text-[10px] text-gray-500 uppercase font-bold">Active Working Date:</span>
+        <span id="activeDateBadge" class="text-xs font-bold text-[#58111A] ml-1 bg-[#FAF6F0] px-2 py-0.5 border border-[#C5A059]/40">Loading...</span>
+      </div>
+      <nav class="flex gap-2">
+        <button onclick="switchTab('billing')" id="tab-billing" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]">Billing & POS</button>
+        <button onclick="switchTab('dayend')" id="tab-dayend" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]">Day Management</button>
+      </nav>
+    </div>
   </header>
 
   <!-- Main View Container -->
@@ -43,149 +39,108 @@
     
     <!-- 1. BILLING & POS SECTION -->
     <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4 overflow-hidden">
-      
-      <!-- Menu Selection (Left Column) -->
       <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
-        
-        <!-- Category Filter (Fixed Alignment Issue) -->
-        <div class="flex gap-2 mb-4 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30 shrink-0">
-          <button onclick="filterPosCat('ALL')" id="pos-cat-ALL" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm transition-all">All Items</button>
-          <button onclick="filterPosCat('Chef Special')" id="pos-cat-Chef Special" class="pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">Chef Special</button>
-          <button onclick="filterPosCat('Tandoori & Grills')" id="pos-cat-Tandoori & Grills" class="pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">Grills</button>
-          <button onclick="filterPosCat('Main Course')" id="pos-cat-Main Course" class="pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">Mains</button>
-          <button onclick="filterPosCat('Beverages')" id="pos-cat-Beverages" class="pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">Drinks</button>
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30 shrink-0" id="categoryTabs">
+          <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap">All Items</button>
         </div>
-
-        <!-- Menu Grid -->
-        <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start"></div>
+        <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start">
+          <p class="text-xs text-gray-500 col-span-2 text-center py-10">Connecting to Google Sheet Database...</p>
+        </div>
       </div>
 
-      <!-- Current Order & Cart (Right Column) -->
+      <!-- Current Order Cart -->
       <div class="col-span-5 flex flex-col bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm">
-        <h2 class="font-serif-classic text-base font-bold text-[#58111A] uppercase border-b border-[#C5A059]/30 pb-2">
-          Current Order
-        </h2>
-
-        <!-- Table No Selection -->
+        <h2 class="text-base font-bold text-[#58111A] uppercase border-b border-[#C5A059]/30 pb-2">Current Order</h2>
         <div class="my-3 flex items-center justify-between bg-[#FAF6F0] p-2 border border-[#C5A059]/30">
           <label class="text-xs font-bold text-[#58111A] uppercase">Table Number:</label>
           <input type="number" id="posTableNo" placeholder="e.g. 05" class="w-24 border border-[#C5A059] px-2 py-1 text-xs font-bold bg-[#FDFBF7] text-[#58111A] outline-none text-center">
         </div>
 
-        <!-- Cart Items List -->
         <div id="posCartList" class="flex-1 overflow-y-auto space-y-2 pr-1 border-b border-[#C5A059]/30 py-2">
           <p class="text-xs text-center text-gray-400 py-10">No items added to order</p>
         </div>
 
-        <!-- Order Summary & Actions -->
         <div class="pt-3 space-y-2 shrink-0">
           <div class="flex justify-between items-center text-xs font-bold text-[#58111A] bg-[#FAF6F0] p-2 border border-[#C5A059]/20">
-            <span>Total Payable Amount</span>
-            <span id="posTotalSum" class="font-serif-classic text-base text-[#58111A]">₹0.00</span>
+            <span>Total Payable</span>
+            <span id="posTotalSum" class="text-base text-[#58111A]">₹0.00</span>
           </div>
 
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50 transition-colors">
-              Clear Cart
-            </button>
-            <button onclick="sendToKitchen()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] transition-colors shadow-sm">
-              Send To Kitchen KDS
-            </button>
+            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50">Clear Cart</button>
+            <button onclick="sendToKitchen()" id="btnSendKds" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] shadow-sm">Send To Kitchen KDS</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 2. KITCHEN KDS SECTION -->
-    <section id="sec-kitchen" class="h-full p-6 overflow-y-auto hidden bg-[#FAF6F0]">
-      <h2 class="font-serif-classic text-lg font-bold text-[#58111A] uppercase border-b-2 border-[#C5A059] pb-2 mb-4">
-        Active Kitchen Orders
-      </h2>
-      <div id="kdsOrdersList" class="grid grid-cols-3 gap-4">
-        <p class="text-xs text-gray-500 col-span-3">No active orders in kitchen right now.</p>
-      </div>
-    </section>
-
-    <!-- 3. TABLE STATUS SECTION -->
-    <section id="sec-tables" class="h-full p-6 overflow-y-auto hidden">
-      <h2 class="font-serif-classic text-lg font-bold text-[#58111A] uppercase border-b-2 border-[#C5A059] pb-2 mb-4">
-        Floor Table Status
-      </h2>
-      <div class="grid grid-cols-4 gap-4">
-        <div class="bg-[#FAF6F0] border-2 border-green-600 p-4 text-center space-y-1">
-          <h3 class="font-serif-classic font-bold text-lg text-[#58111A]">Table #01</h3>
-          <span class="inline-block bg-green-100 text-green-800 text-[10px] px-2 py-0.5 font-bold uppercase">Available</span>
+    <!-- 2. DAY MANAGEMENT SECTION -->
+    <section id="sec-dayend" class="h-full p-8 hidden bg-[#FAF6F0] flex items-center justify-center">
+      <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-6 max-w-md w-full shadow-lg space-y-4">
+        <h2 class="text-lg font-bold text-[#58111A] uppercase border-b border-[#C5A059]/40 pb-2">Business Day Closing & Rollover</h2>
+        <div>
+          <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Enter Next Working Date:</label>
+          <input type="date" id="nextActiveDate" class="w-full bg-[#FAF6F0] border border-[#C5A059] p-2 text-xs font-bold text-[#58111A]">
         </div>
-        <div class="bg-[#FAF6F0] border-2 border-red-600 p-4 text-center space-y-1">
-          <h3 class="font-serif-classic font-bold text-lg text-[#58111A]">Table #02</h3>
-          <span class="inline-block bg-red-100 text-red-800 text-[10px] px-2 py-0.5 font-bold uppercase">Occupied</span>
+        <div>
+          <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Closing Notes / Remarks:</label>
+          <input type="text" id="closingNotes" placeholder="Standard Shift Close" class="w-full bg-[#FAF6F0] border border-[#C5A059] p-2 text-xs text-[#58111A]">
         </div>
-        <div class="bg-[#FAF6F0] border-2 border-green-600 p-4 text-center space-y-1">
-          <h3 class="font-serif-classic font-bold text-lg text-[#58111A]">Table #03</h3>
-          <span class="inline-block bg-green-100 text-green-800 text-[10px] px-2 py-0.5 font-bold uppercase">Available</span>
-        </div>
-        <div class="bg-[#FAF6F0] border-2 border-green-600 p-4 text-center space-y-1">
-          <h3 class="font-serif-classic font-bold text-lg text-[#58111A]">Table #04</h3>
-          <span class="inline-block bg-green-100 text-green-800 text-[10px] px-2 py-0.5 font-bold uppercase">Available</span>
-        </div>
+        <button onclick="confirmDayRollover()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase hover:bg-[#3D0B12]">
+          Close Current Day & Set New Date
+        </button>
       </div>
     </section>
 
   </main>
 
   <script>
-    // Menu Data
-    const menuDatabase = [
-      { id: "M01", category: "Chef Special", name: "Stuff Kurkure Chaap", price: 500 },
-      { id: "M02", category: "Chef Special", name: "Stuff Tandoori Mushroom", price: 500 },
-      { id: "M03", category: "Chef Special", name: "Cheese Mushroom Duplex", price: 500 },
-      { id: "M04", category: "Chef Special", name: "Sharabi Tikka With Egg", price: 550 },
-      { id: "M05", category: "Chef Special", name: "Bhatti Chicken Barra", price: 550 },
-      { id: "M06", category: "Chef Special", name: "Chicken Rada Gravy", price: 600 },
-
-      { id: "M07", category: "Tandoori & Grills", name: "Paneer Tikka (Achari/Haryali)", price: 400 },
-      { id: "M08", category: "Tandoori & Grills", name: "Tandoori Chaap (Malai/Kurkure)", price: 400 },
-      { id: "M09", category: "Tandoori & Grills", name: "Tandoori Pineapple", price: 400 },
-      { id: "M10", category: "Tandoori & Grills", name: "Tandoori Chicken Tikka", price: 500 },
-      { id: "M11", category: "Tandoori & Grills", name: "Sharbati Chicken Tikka", price: 600 },
-
-      { id: "M12", category: "Main Course", name: "Dal Makhani", price: 450 },
-      { id: "M13", category: "Main Course", name: "Paneer Lababdar", price: 450 },
-      { id: "M14", category: "Main Course", name: "Rogan Josh (4 pcs.)", price: 750 },
-      { id: "M15", category: "Main Course", name: "Kashmiri Gosh Tabba with Rice", price: 900 },
-
-      { id: "M16", category: "Beverages", name: "Mojito Pitcher", price: 250 },
-      { id: "M17", category: "Beverages", name: "Fresh Lime Soda", price: 150 }
-    ];
-
+    let menuDatabase = [];
     let posCart = [];
-    let kdsOrders = [];
     let currentPosCategory = "ALL";
+    let activeWorkingDate = "";
 
-    window.onload = function() { renderPosMenu(); };
+    window.onload = function() {
+      loadInitialSystemData();
+    };
+
+    function loadInitialSystemData() {
+      google.script.run
+        .withSuccessHandler(function(data) {
+          menuDatabase = data.menu;
+          activeWorkingDate = data.currentDate;
+          document.getElementById('activeDateBadge').innerText = activeWorkingDate;
+          buildCategoryTabs();
+          renderPosMenu();
+        })
+        .withFailureHandler(function(err) {
+          alert("Error fetching data: " + err.message);
+        })
+        .getInitialData();
+    }
+
+    function buildCategoryTabs() {
+      const categories = ["ALL", ...new Set(menuDatabase.map(item => item.category))];
+      const container = document.getElementById('categoryTabs');
+      container.innerHTML = categories.map(cat => `
+        <button onclick="filterPosCat('${cat}')" id="pos-cat-${cat}" class="pos-cat-btn ${cat === 'ALL' ? 'bg-[#58111A] text-[#FDFBF7]' : 'bg-[#FDFBF7] text-[#58111A]'} border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap">${cat}</button>
+      `).join('');
+    }
 
     function switchTab(tab) {
-      document.getElementById('sec-billing').classList.add('hidden');
-      document.getElementById('sec-kitchen').classList.add('hidden');
-      document.getElementById('sec-tables').classList.add('hidden');
-
-      document.getElementById('tab-billing').className = "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]";
-      document.getElementById('tab-kitchen').className = "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]";
-      document.getElementById('tab-tables').className = "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]";
-
-      document.getElementById(`sec-${tab}`).classList.remove('hidden');
-      document.getElementById(`tab-${tab}`).className = "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]";
+      document.getElementById('sec-billing').classList.toggle('hidden', tab !== 'billing');
+      document.getElementById('sec-dayend').classList.toggle('hidden', tab !== 'dayend');
+      document.getElementById('tab-billing').className = tab === 'billing' ? "px-4 py-1.5 text-xs font-bold uppercase border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]" : "px-4 py-1.5 text-xs font-bold uppercase border border-[#C5A059]/40 text-[#58111A]";
+      document.getElementById('tab-dayend').className = tab === 'dayend' ? "px-4 py-1.5 text-xs font-bold uppercase border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]" : "px-4 py-1.5 text-xs font-bold uppercase border border-[#C5A059]/40 text-[#58111A]";
     }
 
     function filterPosCat(cat) {
       currentPosCategory = cat;
       document.querySelectorAll('.pos-cat-btn').forEach(b => {
-        b.className = "pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all";
+        b.className = "pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap";
       });
       const activeBtn = document.getElementById(`pos-cat-${cat}`);
-      if(activeBtn) {
-        activeBtn.className = "pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm transition-all";
-      }
+      if(activeBtn) activeBtn.className = "pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm";
       renderPosMenu();
     }
 
@@ -196,25 +151,22 @@
       container.innerHTML = filtered.map(item => {
         const cartItem = posCart.find(c => c.id === item.id);
         const qty = cartItem ? cartItem.qty : 0;
-
         return `
           <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-3 flex flex-col justify-between hover:border-[#58111A] transition-all shadow-sm rounded-sm">
             <div>
-              <h4 class="font-serif-classic font-bold text-xs text-[#58111A] leading-snug">${item.name}</h4>
+              <h4 class="font-bold text-xs text-[#58111A] leading-snug">${item.name}</h4>
               <p class="text-[9px] text-[#C5A059] font-bold uppercase mt-1 tracking-wider">${item.category}</p>
             </div>
-            
             <div class="flex justify-between items-center mt-3 pt-2 border-t border-[#C5A059]/20">
               <p class="font-bold text-xs text-[#1A1A1A]">₹${item.price.toFixed(2)}</p>
-              
               ${qty > 0 ? `
                 <div class="flex items-center border border-[#C5A059] bg-[#FAF6F0]">
-                  <button onclick="changePosQty('${item.id}', -1)" class="w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20">-</button>
+                  <button onclick="changePosQty('${item.id}', -1)" class="w-6 h-6 font-bold text-[#58111A]">-</button>
                   <span class="w-6 text-center font-bold text-xs text-[#58111A]">${qty}</span>
-                  <button onclick="changePosQty('${item.id}', 1)" class="w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20">+</button>
+                  <button onclick="changePosQty('${item.id}', 1)" class="w-6 h-6 font-bold text-[#58111A]">+</button>
                 </div>
               ` : `
-                <button onclick="addPosItem('${item.id}')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase hover:bg-[#3D0B12] transition-colors">
+                <button onclick="addPosItem('${item.id}')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase hover:bg-[#3D0B12]">
                   + Add
                 </button>
               `}
@@ -248,7 +200,6 @@
         document.getElementById('posTotalSum').innerText = `₹0.00`;
         return;
       }
-
       container.innerHTML = posCart.map(c => `
         <div class="flex justify-between items-center bg-[#FAF6F0] p-2 border border-[#C5A059]/30 text-xs">
           <div class="flex-1 pr-2">
@@ -256,9 +207,9 @@
             <p class="text-[10px] text-gray-500">₹${c.price} × ${c.qty}</p>
           </div>
           <div class="flex items-center border border-[#C5A059] bg-[#FDFBF7] mr-2">
-            <button onclick="changePosQty('${c.id}', -1)" class="w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20">-</button>
+            <button onclick="changePosQty('${c.id}', -1)" class="w-5 h-5 font-bold text-[#58111A]">-</button>
             <span class="w-5 text-center font-bold text-[11px]">${c.qty}</span>
-            <button onclick="changePosQty('${c.id}', 1)" class="w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20">+</button>
+            <button onclick="changePosQty('${c.id}', 1)" class="w-5 h-5 font-bold text-[#58111A]">+</button>
           </div>
           <span class="font-bold text-[#58111A]">₹${(c.price * c.qty).toFixed(2)}</span>
         </div>
@@ -277,58 +228,48 @@
 
     function sendToKitchen() {
       const tbl = document.getElementById('posTableNo').value;
-      if(!tbl) {
-        alert('Please enter Table Number!');
-        return;
-      }
-      if(posCart.length === 0) {
-        alert('Cart is empty!');
-        return;
-      }
+      if(!tbl) { alert('Please specify a Table Number.'); return; }
+      if(posCart.length === 0) { alert('Cart is empty.'); return; }
 
-      kdsOrders.push({
-        id: "ORD-" + Math.floor(Math.random() * 900 + 100),
+      const total = posCart.reduce((s, c) => s + (c.price * c.qty), 0);
+      const btn = document.getElementById('btnSendKds');
+      btn.innerText = "Syncing Sheet...";
+      btn.disabled = true;
+
+      const orderPayload = {
         table: tbl,
-        items: [...posCart],
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      });
+        items: posCart,
+        total: total
+      };
 
-      alert(`Order sent to Kitchen KDS for Table #${tbl}!`);
-      clearPosCart();
-      renderKDS();
+      google.script.run
+        .withSuccessHandler(function(res) {
+          alert(`Order ${res.orderId} dispatched to Sheet & Kitchen!`);
+          btn.innerText = "Send To Kitchen KDS";
+          btn.disabled = false;
+          clearPosCart();
+        })
+        .withFailureHandler(function(err) {
+          alert("Order failed: " + err.message);
+          btn.innerText = "Send To Kitchen KDS";
+          btn.disabled = false;
+        })
+        .submitNewOrder(orderPayload);
     }
 
-    function renderKDS() {
-      const container = document.getElementById('kdsOrdersList');
-      if(kdsOrders.length === 0) {
-        container.innerHTML = `<p class="text-xs text-gray-500 col-span-3">No active orders in kitchen right now.</p>`;
-        return;
+    function confirmDayRollover() {
+      const nextDate = document.getElementById('nextActiveDate').value;
+      const notes = document.getElementById('closingNotes').value;
+      if(!nextDate) { alert('Please select a date to rollover.'); return; }
+
+      if(confirm(`Lock current ledger and rollover active POS date to: ${nextDate}?`)) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            alert(`Business date updated to ${res.activeDate}.`);
+            location.reload();
+          })
+          .executeDayCloseAndSetNext(nextDate, notes);
       }
-
-      container.innerHTML = kdsOrders.map((o, idx) => `
-        <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm space-y-3">
-          <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2">
-            <div>
-              <h3 class="font-serif-classic font-bold text-sm text-[#58111A]">Table #${o.table}</h3>
-              <p class="text-[10px] text-[#C5A059] font-bold">${o.id} • ${o.time}</p>
-            </div>
-            <span class="bg-[#58111A] text-[#FDFBF7] text-[10px] px-2 py-0.5 uppercase font-bold">Preparing</span>
-          </div>
-
-          <div class="space-y-1 text-xs">
-            ${o.items.map(i => `<div class="flex justify-between"><span>${i.name}</span><span class="font-bold">x${i.qty}</span></div>`).join('')}
-          </div>
-
-          <button onclick="markOrderDone(${idx})" class="w-full bg-green-700 text-white py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-green-800">
-            ✓ Mark Ready / Complete
-          </button>
-        </div>
-      `).join('');
-    }
-
-    function markOrderDone(idx) {
-      kdsOrders.splice(idx, 1);
-      renderKDS();
     }
   </script>
 </body>
