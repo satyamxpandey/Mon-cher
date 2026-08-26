@@ -2,245 +2,306 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Digital Menu & Pay - Moncher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Moncher - Digital Table Menu</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Montserrat', sans-serif; background: #FDFBF7; color: #1A1A1A; }
-    .font-serif-classic { font-family: 'Playfair Display', serif; }
+    body { font-family: 'Lato', sans-serif; background: #FDFBF7; color: #1A1A1A; }
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background: #FAF6F0; }
   </style>
 </head>
-<body class="pb-28">
+<body class="flex flex-col h-screen overflow-hidden select-none">
 
-  <!-- Header -->
-  <header class="sticky top-0 bg-[#FDFBF7]/95 backdrop-blur border-b-2 border-[#C5A059]/40 px-6 py-4 text-center z-40 shadow-sm">
-    <h1 class="font-serif-classic text-2xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
-    <div class="w-12 h-0.5 bg-[#C5A059] mx-auto my-1"></div>
-    <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-bold">Digital Self-Order & Pay</p>
-  </header>
-
-  <main class="max-w-md mx-auto p-4 space-y-6">
-
-    <!-- Table Number Selection -->
-    <div class="bg-[#FAF6F0] border-2 border-[#C5A059] p-4 shadow-sm space-y-2">
-      <label class="block text-xs font-bold text-[#58111A] uppercase tracking-wider">
-        📍 Enter Table Number:
-      </label>
-      <input type="number" id="tableNo" placeholder="e.g. 05" class="w-full bg-[#FDFBF7] border border-[#C5A059]/60 px-4 py-2 text-sm font-bold text-[#58111A] focus:outline-none focus:border-[#58111A]">
-    </div>
-
-    <!-- Category Filter Tabs (Fixed Clipping Issue) -->
-    <div class="flex gap-2 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30" id="catFilter">
-      <button onclick="filterCat('ALL')" id="cust-cat-ALL" class="cust-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm">All</button>
-      <button onclick="filterCat('Chef Special')" id="cust-cat-Chef Special" class="cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap">Chef Special</button>
-      <button onclick="filterCat('Tandoori & Grills')" id="cust-cat-Tandoori & Grills" class="cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap">Grills</button>
-      <button onclick="filterCat('Main Course')" id="cust-cat-Main Course" class="cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap">Mains</button>
-      <button onclick="filterCat('Beverages')" id="cust-cat-Beverages" class="cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap">Drinks</button>
-    </div>
-
-    <!-- Full Menu Items List -->
-    <div id="customerMenuList" class="space-y-3"></div>
-  </main>
-
-  <!-- Bottom Floating View Cart Bar -->
-  <div id="bottomBar" class="fixed bottom-0 left-0 right-0 p-4 bg-[#FDFBF7]/90 backdrop-blur border-t-2 border-[#C5A059]/40 hidden z-30">
-    <div class="max-w-md mx-auto flex justify-between items-center bg-[#58111A] text-[#FDFBF7] p-3.5 border border-[#C5A059] shadow-xl">
-      <div>
-        <p id="totalItemsCount" class="text-[10px] text-[#C5A059] uppercase font-bold">0 Items</p>
-        <p id="cartTotalSum" class="font-serif-classic font-bold text-base">₹0.00</p>
+  <!-- Table Lock Modal (If table is not detected) -->
+  <div id="tableModal" class="fixed inset-0 bg-[#58111A]/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-[#FDFBF7] border-2 border-[#C5A059] w-full max-w-xs p-6 shadow-2xl rounded-sm text-center">
+      <h2 class="text-xl font-bold text-[#58111A] tracking-widest uppercase mb-1">Welcome</h2>
+      <p class="text-[10px] text-[#C5A059] font-bold uppercase tracking-wider mb-4">Moncher Fine Dining</p>
+      
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Enter Your Table No.</label>
+        <input type="number" id="custTableInput" placeholder="e.g. 05" class="w-full bg-[#FAF6F0] border border-[#C5A059] text-center py-2 text-lg font-bold text-[#58111A] outline-none">
       </div>
-      <button onclick="openCheckoutModal()" class="bg-[#C5A059] text-[#58111A] px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#d4b06a]">
-        Pay Online →
+
+      <button onclick="confirmTableNumber()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12]">
+        Start Ordering
       </button>
     </div>
   </div>
 
-  <!-- Online Payment Modal -->
-  <div id="paymentModal" class="fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center hidden p-4">
-    <div class="bg-[#FDFBF7] border-2 border-[#C5A059] w-full max-w-md p-6 space-y-4 relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeCheckoutModal()" class="absolute top-3 right-3 text-lg font-bold text-[#58111A]">✕</button>
-
-      <div class="text-center border-b border-[#C5A059]/30 pb-3">
-        <h3 class="font-serif-classic text-lg font-bold text-[#58111A]">Complete Payment</h3>
-        <p id="modalTableInfo" class="text-xs text-[#C5A059] font-semibold uppercase mt-0.5">Table # --</p>
-      </div>
-
-      <div id="modalOrderItems" class="space-y-2 text-xs border-b border-[#C5A059]/20 pb-3"></div>
-
-      <div class="space-y-2">
-        <p class="text-xs font-bold text-[#58111A] uppercase">Payment Options:</p>
-        <div class="space-y-2">
-          <label class="flex items-center gap-3 p-3 border border-[#C5A059]/40 bg-[#FAF6F0] cursor-pointer">
-            <input type="radio" name="payMethod" value="upi" checked class="accent-[#58111A]">
-            <span class="text-xs font-bold">UPI (GPay / PhonePe / Paytm)</span>
-          </label>
-          <label class="flex items-center gap-3 p-3 border border-[#C5A059]/40 bg-[#FAF6F0] cursor-pointer">
-            <input type="radio" name="payMethod" value="card" class="accent-[#58111A]">
-            <span class="text-xs font-bold">Credit / Debit Card</span>
-          </label>
-        </div>
-      </div>
-
-      <button onclick="processOnlinePayment()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#3D0B12]">
-        Pay & Send Order To Kitchen
-      </button>
+  <!-- Header -->
+  <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-4 py-3 flex justify-between items-center shrink-0 shadow-sm">
+    <div>
+      <h1 class="text-lg font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
+      <p class="text-[8px] text-[#C5A059] uppercase tracking-widest font-bold">Self-Order Menu</p>
     </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] text-gray-500 font-bold uppercase">Table:</span>
+      <span id="displayTableNum" class="text-xs font-bold text-[#58111A] bg-[#FAF6F0] px-2 py-0.5 border border-[#C5A059]/40 rounded-sm">--</span>
+    </div>
+  </header>
+
+  <!-- Category Pills Navigation -->
+  <div class="bg-[#FAF6F0] border-b border-[#C5A059]/30 px-3 py-2 flex gap-2 overflow-x-auto shrink-0" id="categoryTabs">
+    <button onclick="filterCategory('ALL')" class="cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap">All</button>
+  </div>
+
+  <!-- Menu Item Feed -->
+  <main id="customerMenuList" class="flex-1 overflow-y-auto p-3 space-y-3">
+    <p class="text-xs text-center text-gray-400 py-12">Loading menu...</p>
+  </main>
+
+  <!-- Floating Sticky Cart Bar -->
+  <div id="bottomCartBar" class="bg-[#FAF6F0] border-t-2 border-[#C5A059] p-3 shrink-0 flex items-center justify-between shadow-lg">
+    <div>
+      <p class="text-[10px] text-gray-500 font-bold uppercase"><span id="cartCount">0</span> Items in Cart</p>
+      <p id="cartTotal" class="text-sm font-bold text-[#58111A]">₹0.00</p>
+    </div>
+    <button onclick="openCartDrawer()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-5 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] shadow-sm">
+      View Cart / Order
+    </button>
+  </div>
+
+  <!-- Cart / Checkout Drawer -->
+  <div id="cartDrawer" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 hidden flex flex-col justify-end">
+    <div class="bg-[#FDFBF7] border-t-2 border-[#C5A059] p-4 max-h-[80vh] flex flex-col shadow-2xl rounded-t-lg">
+      <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2 mb-3">
+        <h2 class="text-sm font-bold text-[#58111A] uppercase">Your Order Summary</h2>
+        <button onclick="closeCartDrawer()" class="text-xs font-bold text-gray-500 hover:text-[#58111A]">✕ Close</button>
+      </div>
+
+      <!-- Cart Item List -->
+      <div id="drawerCartList" class="flex-1 overflow-y-auto space-y-2 py-1 max-h-56"></div>
+
+      <!-- Bill Breakdown -->
+      <div class="border-t border-[#C5A059]/30 pt-3 mt-3 space-y-2">
+        <div class="flex justify-between items-center text-xs font-bold text-[#58111A]">
+          <span>Total Bill</span>
+          <span id="drawerTotalSum" class="text-base">₹0.00</span>
+        </div>
+
+        <button onclick="placeCustomerOrder()" id="btnPlaceOrder" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] shadow-md">
+          Confirm & Send To Kitchen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Success Screen -->
+  <div id="successModal" class="fixed inset-0 bg-[#58111A] z-50 hidden flex flex-col items-center justify-center p-6 text-center text-[#FDFBF7]">
+    <div class="w-12 h-12 rounded-full border-2 border-[#C5A059] flex items-center justify-center text-xl font-bold mb-3">✓</div>
+    <h2 class="text-xl font-bold tracking-wider uppercase mb-1">Order Received!</h2>
+    <p class="text-xs text-[#C5A059] font-bold uppercase mb-4" id="successOrderId">Order #ORD-XXXX</p>
+    <p class="text-xs text-gray-200 max-w-xs mb-6">Your order has been sent directly to the kitchen. You can track your table number on the status screen.</p>
+    <button onclick="resetCustomerSession()" class="bg-[#FDFBF7] text-[#58111A] border border-[#C5A059] px-6 py-2 text-xs font-bold uppercase tracking-wider">
+      Order More Items
+    </button>
   </div>
 
   <script>
-    const customerMenu = [
-      { id: "M01", category: "Chef Special", name: "Stuff Kurkure Chaap", price: 500, desc: "Crispy fried soy chaap filled with rich cottage cheese" },
-      { id: "M02", category: "Chef Special", name: "Stuff Tandoori Mushroom", price: 500, desc: "Clay oven roasted mushrooms stuffed with herbs" },
-      { id: "M03", category: "Chef Special", name: "Cheese Mushroom Duplex", price: 500, desc: "Double mushroom caps stuffed with melted cheese" },
-      { id: "M04", category: "Chef Special", name: "Sharabi Tikka With Egg", price: 550, desc: "Infused marinated chicken roasted with egg coating" },
-      { id: "M05", category: "Chef Special", name: "Bhatti Chicken Barra", price: 550, desc: "Slow roasted smoky bhatti chicken morsels" },
-      { id: "M06", category: "Chef Special", name: "Chicken Rada Gravy", price: 600, desc: "Minced chicken cooked in rich spiced gravy" },
+    let menuData = [];
+    let custCart = [];
+    let activeCategory = "ALL";
+    let customerTable = null;
 
-      { id: "M07", category: "Tandoori & Grills", name: "Paneer Tikka (Achari/Haryali)", price: 400, desc: "Marinated cottage cheese grilled in tandoor" },
-      { id: "M08", category: "Tandoori & Grills", name: "Tandoori Chaap (Malai/Kurkure)", price: 400, desc: "Rich cream marinated soy chaap" },
-      { id: "M09", category: "Tandoori & Grills", name: "Tandoori Pineapple", price: 400, desc: "Sweet & spicy grilled pineapple slices" },
-      { id: "M10", category: "Tandoori & Grills", name: "Tandoori Chicken Tikka", price: 500, desc: "Classic smoky charred chicken tikka" },
-      { id: "M11", category: "Tandoori & Grills", name: "Sharbati Chicken Tikka", price: 600, desc: "Tender juice-infused spiced chicken tikka" },
+    window.onload = function() {
+      detectTableFromUrl();
+      loadMenuData();
+    };
 
-      { id: "M12", category: "Main Course", name: "Dal Makhani", price: 450, desc: "Overnight cooked black lentils with white butter" },
-      { id: "M13", category: "Main Course", name: "Paneer Lababdar", price: 450, desc: "Cottage cheese cubes in rich tomato cashew gravy" },
-      { id: "M14", category: "Main Course", name: "Rogan Josh (4 pcs.)", price: 750, desc: "Traditional Kashmiri style slow cooked mutton" },
-      { id: "M15", category: "Main Course", name: "Kashmiri Gosh Tabba with Rice", price: 900, desc: "Authentic tender meat tabba served with aromatic rice" },
-
-      { id: "M16", category: "Beverages", name: "Mojito Pitcher", price: 250, desc: "Refreshing mint and lime chiller" },
-      { id: "M17", category: "Beverages", name: "Fresh Lime Soda", price: 150, desc: "Sweet & salted fizzy soda" }
-    ];
-
-    let userCart = [];
-    let currentCategory = "ALL";
-
-    window.onload = function() { renderMenu(); };
-
-    function filterCat(cat) {
-      currentCategory = cat;
-      document.querySelectorAll('.cust-cat-btn').forEach(b => {
-        b.className = "cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap";
-      });
-      const active = document.getElementById(`cust-cat-${cat}`);
-      if(active) {
-        active.className = "cust-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm";
+    // Auto-detect table from URL param ?table=5
+    function detectTableFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const tbl = params.get('table');
+      if (tbl) {
+        setTableNumber(tbl);
       }
-      renderMenu();
     }
 
-    function renderMenu() {
-      const container = document.getElementById('customerMenuList');
-      const filtered = customerMenu.filter(i => currentCategory === "ALL" || i.category === currentCategory);
+    function confirmTableNumber() {
+      const val = document.getElementById('custTableInput').value.trim();
+      if (!val) { alert('Please enter your table number.'); return; }
+      setTableNumber(val);
+    }
 
-      container.innerHTML = filtered.map(item => `
-        <div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-3.5 flex justify-between items-center shadow-sm">
-          <div class="flex-1 pr-3">
-            <h3 class="font-serif-classic font-bold text-sm text-[#58111A]">${item.name}</h3>
-            <p class="text-[10px] text-[#1A1A1A]/70 mt-0.5">${item.desc}</p>
-            <p class="font-bold text-xs text-[#1A1A1A] mt-1">₹${item.price.toFixed(2)}</p>
-          </div>
-          
-          <div id="btn-container-${item.id}">
-            <button onclick="addItem('${item.id}')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1.5 text-xs font-bold uppercase">
-              + Add
-            </button>
-          </div>
-        </div>
+    function setTableNumber(tbl) {
+      customerTable = tbl;
+      document.getElementById('displayTableNum').innerText = `#${tbl}`;
+      document.getElementById('tableModal').classList.add('hidden');
+    }
+
+    function loadMenuData() {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          menuData = res.menu;
+          renderCategoryPills();
+          renderCustomerMenu();
+        })
+        .withFailureHandler(function(err) {
+          alert('Failed to load menu: ' + err.message);
+        })
+        .getInitialData();
+    }
+
+    function renderCategoryPills() {
+      const cats = ["ALL", ...new Set(menuData.map(i => i.category))];
+      const container = document.getElementById('categoryTabs');
+      container.innerHTML = cats.map(c => `
+        <button onclick="filterCategory('${c}')" id="cat-btn-${c}" class="cat-btn ${c === activeCategory ? 'bg-[#58111A] text-[#FDFBF7]' : 'bg-[#FDFBF7] text-[#58111A]'} border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap">${c}</button>
       `).join('');
-      updateUI();
     }
 
-    function addItem(id) {
-      const item = customerMenu.find(i => i.id === id);
-      const exist = userCart.find(c => c.id === id);
-      if(exist) exist.qty++; else userCart.push({...item, qty: 1});
-      updateUI();
-    }
-
-    function changeQty(id, delta) {
-      const item = userCart.find(c => c.id === id);
-      if(!item) return;
-      item.qty += delta;
-      if(item.qty <= 0) userCart = userCart.filter(c => c.id !== id);
-      updateUI();
-    }
-
-    function updateUI() {
-      customerMenu.forEach(item => {
-        const cartItem = userCart.find(c => c.id === item.id);
-        const container = document.getElementById(`btn-container-${item.id}`);
-        if(container) {
-          if(cartItem) {
-            container.innerHTML = `
-              <div class="flex items-center border border-[#C5A059] bg-[#FDFBF7]">
-                <button onclick="changeQty('${item.id}', -1)" class="w-7 h-7 font-bold text-[#58111A]">-</button>
-                <span class="w-6 text-center font-bold text-xs">${cartItem.qty}</span>
-                <button onclick="changeQty('${item.id}', 1)" class="w-7 h-7 font-bold text-[#58111A]">+</button>
-              </div>
-            `;
-          } else {
-            container.innerHTML = `
-              <button onclick="addItem('${item.id}')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1.5 text-xs font-bold uppercase">
-                + Add
-              </button>
-            `;
-          }
-        }
+    function filterCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.className = "cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap";
       });
-
-      const totalQty = userCart.reduce((s, c) => s + c.qty, 0);
-      const totalSum = userCart.reduce((s, c) => s + (c.price * c.qty), 0);
-      
-      const bottomBar = document.getElementById('bottomBar');
-      if(totalQty > 0) {
-        bottomBar.classList.remove('hidden');
-        document.getElementById('totalItemsCount').innerText = `${totalQty} ITEMS ADDED`;
-        document.getElementById('cartTotalSum').innerText = `₹${totalSum.toFixed(2)}`;
-      } else {
-        bottomBar.classList.add('hidden');
-      }
+      const activeBtn = document.getElementById(`cat-btn-${cat}`);
+      if(activeBtn) activeBtn.className = "cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm";
+      renderCustomerMenu();
     }
 
-    function openCheckoutModal() {
-      const tbl = document.getElementById('tableNo').value;
-      if(!tbl) {
-        alert('Please enter your Table Number first!');
-        document.getElementById('tableNo').focus();
+    function renderCustomerMenu() {
+      const container = document.getElementById('customerMenuList');
+      const filtered = menuData.filter(i => activeCategory === "ALL" || i.category === activeCategory);
+
+      container.innerHTML = filtered.map(item => {
+        const cartItem = custCart.find(c => c.id === item.id);
+        const qty = cartItem ? cartItem.qty : 0;
+        return `
+          <div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-3 flex justify-between items-center rounded-sm shadow-xs">
+            <div class="flex-1 pr-3">
+              <div class="flex items-center gap-1.5">
+                <span class="inline-block w-2 h-2 rounded-full ${item.veg ? 'bg-green-600' : 'bg-red-600'}"></span>
+                <h3 class="font-bold text-xs text-[#58111A]">${item.name}</h3>
+              </div>
+              <p class="text-[9px] text-[#C5A059] uppercase font-bold mt-0.5">${item.category}</p>
+              <p class="text-xs font-bold text-[#1A1A1A] mt-1">₹${item.price.toFixed(2)}</p>
+            </div>
+
+            <div>
+              ${qty > 0 ? `
+                <div class="flex items-center border border-[#C5A059] bg-[#FDFBF7]">
+                  <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 font-bold text-[#58111A]">-</button>
+                  <span class="w-6 text-center font-bold text-xs">${qty}</span>
+                  <button onclick="updateQty('${item.id}', 1)" class="w-6 h-6 font-bold text-[#58111A]">+</button>
+                </div>
+              ` : `
+                <button onclick="updateQty('${item.id}', 1)" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase">
+                  + Add
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateQty(id, delta) {
+      const item = menuData.find(i => i.id === id);
+      const exist = custCart.find(c => c.id === id);
+
+      if (exist) {
+        exist.qty += delta;
+        if (exist.qty <= 0) {
+          custCart = custCart.filter(c => c.id !== id);
+        }
+      } else if (delta > 0) {
+        custCart.push({ ...item, qty: 1 });
+      }
+
+      renderCustomerMenu();
+      syncCartTotals();
+    }
+
+    function syncCartTotals() {
+      const totalItems = custCart.reduce((sum, i) => sum + i.qty, 0);
+      const totalCost = custCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+      document.getElementById('cartCount').innerText = totalItems;
+      document.getElementById('cartTotal').innerText = `₹${totalCost.toFixed(2)}`;
+      document.getElementById('drawerTotalSum').innerText = `₹${totalCost.toFixed(2)}`;
+
+      renderDrawerList();
+    }
+
+    function openCartDrawer() {
+      if (custCart.length === 0) { alert('Your cart is empty.'); return; }
+      document.getElementById('cartDrawer').classList.remove('hidden');
+    }
+
+    function closeCartDrawer() {
+      document.getElementById('cartDrawer').classList.add('hidden');
+    }
+
+    function renderDrawerList() {
+      const container = document.getElementById('drawerCartList');
+      if (custCart.length === 0) {
+        container.innerHTML = `<p class="text-xs text-center text-gray-400 py-6">No items selected</p>`;
         return;
       }
-      document.getElementById('modalTableInfo').innerText = `ORDER FOR TABLE #${tbl}`;
-      
-      const itemsContainer = document.getElementById('modalOrderItems');
-      itemsContainer.innerHTML = userCart.map(c => `
-        <div class="flex justify-between border-b border-[#C5A059]/20 pb-1">
-          <span>${c.name} x ${c.qty}</span>
-          <span class="font-bold text-[#58111A]">₹${(c.price * c.qty).toFixed(2)}</span>
+
+      container.innerHTML = custCart.map(i => `
+        <div class="flex justify-between items-center text-xs py-1 border-b border-gray-100">
+          <div>
+            <p class="font-bold text-[#58111A]">${i.name}</p>
+            <p class="text-[10px] text-gray-500">₹${i.price} × ${i.qty}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="flex items-center border border-[#C5A059]">
+              <button onclick="updateQty('${i.id}', -1)" class="w-5 h-5 text-center font-bold">-</button>
+              <span class="w-5 text-center font-bold text-[11px]">${i.qty}</span>
+              <button onclick="updateQty('${i.id}', 1)" class="w-5 h-5 text-center font-bold">+</button>
+            </div>
+            <span class="font-bold text-[#58111A] min-w-[50px] text-right">₹${(i.price * i.qty).toFixed(2)}</span>
+          </div>
         </div>
       `).join('');
-
-      const totalSum = userCart.reduce((s, c) => s + (c.price * c.qty), 0);
-      itemsContainer.innerHTML += `
-        <div class="flex justify-between font-bold text-sm text-[#58111A] pt-2">
-          <span>Total Payable</span>
-          <span>₹${totalSum.toFixed(2)}</span>
-        </div>
-      `;
-
-      document.getElementById('paymentModal').classList.remove('hidden');
     }
 
-    function closeCheckoutModal() {
-      document.getElementById('paymentModal').classList.add('hidden');
+    function placeCustomerOrder() {
+      if (!customerTable) {
+        alert('Table number missing. Please set your table.');
+        document.getElementById('tableModal').classList.remove('hidden');
+        return;
+      }
+
+      const totalCost = custCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const btn = document.getElementById('btnPlaceOrder');
+      btn.innerText = "Transmitting Order...";
+      btn.disabled = true;
+
+      const orderData = {
+        table: customerTable,
+        items: custCart,
+        total: totalCost,
+        paymentMode: "Self-Order (Pending)"
+      };
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.innerText = "Confirm & Send To Kitchen";
+          btn.disabled = false;
+          closeCartDrawer();
+          document.getElementById('successOrderId').innerText = `Ticket #${res.orderId}`;
+          document.getElementById('successModal').classList.remove('hidden');
+        })
+        .withFailureHandler(function(err) {
+          alert('Error submitting order: ' + err.message);
+          btn.innerText = "Confirm & Send To Kitchen";
+          btn.disabled = false;
+        })
+        .submitNewOrder(orderData);
     }
 
-    function processOnlinePayment() {
-      const tbl = document.getElementById('tableNo').value;
-      alert(`Payment Successful!\nOrder sent to Kitchen KDS for Table #${tbl}.`);
-      userCart = [];
-      document.getElementById('tableNo').value = '';
-      closeCheckoutModal();
-      renderMenu();
+    function resetCustomerSession() {
+      custCart = [];
+      syncCartTotals();
+      renderCustomerMenu();
+      document.getElementById('successModal').classList.add('hidden');
     }
   </script>
 </body>
