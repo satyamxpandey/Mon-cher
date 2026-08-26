@@ -2,25 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mon Cher - Billing Counter</title>
+    <title>Mon Cher POS Counter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; }
-        h1 { color: #D4AF37; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { background: #1E1E1E; padding: 15px; border-radius: 8px; border: 1px solid #333; }
-        .btn { background: #D4AF37; color: #000; padding: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        :root {
+            --primary: #D4AF37; --bg: #0C0C0E; --surface: #16161A;
+            --card: #202026; --border: #2C2C36; --text: #FFF; --muted: #8E8E9A;
+            --green: #22C55E;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+
+        .pos-container { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Menu Grid (Left 65%) */
+        .menu-section { flex: 0.65; padding: 20px; overflow-y: auto; border-right: 1px solid var(--border); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; margin-top: 15px; }
+        .pos-item {
+            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 16px; cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .pos-item:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .pos-item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; }
+        .pos-item-price { color: var(--primary); font-weight: 700; }
+
+        /* Checkout Sidebar (Right 35%) */
+        .billing-section { flex: 0.35; background: var(--surface); display: flex; flex-direction: column; padding: 20px; }
+        .bill-list { flex: 1; overflow-y: auto; margin: 15px 0; }
+        .bill-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .summary-box { background: var(--card); padding: 16px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .total-row { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 700; color: var(--primary); }
+
+        .btn-group { display: flex; gap: 10px; }
+        .btn-pay {
+            flex: 1; padding: 14px; border: none; border-radius: 8px;
+            font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: opacity 0.2s;
+        }
+        .btn-cash { background: var(--green); color: #FFF; }
+        .btn-upi { background: var(--primary); color: #000; }
+        .btn-pay:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
-    <h1>Billing POS Counter</h1>
-    <div class="grid">
-        <div class="card" id="menuList">Loading Menu...</div>
-        <div class="card">
-            <h3>Current Order</h3>
-            <div id="billItems">No items selected</div>
-            <h3>Total: ₹<span id="billTotal">0</span></h3>
-            <button class="btn" onclick="placeOrder('Cash')">Pay via Cash</button>
-            <button class="btn" onclick="placeOrder('Razorpay')">Pay via Dynamic UPI</button>
+
+    <div class="navbar">
+        <div class="logo">Mon Cher POS System</div>
+        <div style="color: var(--muted); font-size: 0.85rem;">Register #1 | Counter Staff</div>
+    </div>
+
+    <div class="pos-container">
+        <div class="menu-section">
+            <h2 style="font-size: 1.1rem; color: var(--muted);">MENU ITEMS</h2>
+            <div class="grid" id="posMenuContainer">Loading...</div>
+        </div>
+
+        <div class="billing-section">
+            <h2 style="font-size: 1.1rem;">Current Order</h2>
+            <div class="bill-list" id="billList"><p style="color:var(--muted); text-align:center; margin-top:40px;">No items selected</p></div>
+            
+            <div class="summary-box">
+                <div class="total-row"><span>Total Pay:</span><span id="posTotal">₹0</span></div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-pay btn-cash" onclick="processPayment('Cash')">Cash Pay</button>
+                <button class="btn-pay btn-upi" onclick="processPayment('Razorpay')">UPI / Card</button>
+            </div>
         </div>
     </div>
 
@@ -28,25 +78,45 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
         let cart = [], total = 0;
 
-        async function loadMenu() {
+        async function loadPOSMenu() {
             const res = await fetch(`${API_URL}?action=getMenu`);
             const json = await res.json();
-            const list = document.getElementById('menuList');
-            list.innerHTML = '<h3>Select Items</h3>';
+            const container = document.getElementById('posMenuContainer');
+            container.innerHTML = '';
+            
             json.data.forEach(item => {
-                list.innerHTML += `<p>${item.Name} - ₹${item.Price} <button onclick="addItem('${item.Name}', ${item.Price})">Add</button></p>`;
+                if(item.Is_Available) {
+                    container.innerHTML += `
+                        <div class="pos-item" onclick="addItem('${item.Name}', ${item.Price})">
+                            <div class="pos-item-name">${item.Name}</div>
+                            <div class="pos-item-price">₹${item.Price}</div>
+                        </div>`;
+                }
             });
         }
 
         function addItem(name, price) {
             cart.push({ name, price });
             total += price;
-            document.getElementById('billTotal').innerText = total;
-            document.getElementById('billItems').innerHTML = cart.map(i => `<div>${i.name} - ₹${i.price}</div>`).join('');
+            renderBill();
         }
 
-        async function placeOrder(mode) {
-            if (cart.length === 0) return;
+        function renderBill() {
+            const container = document.getElementById('billList');
+            document.getElementById('posTotal').innerText = `₹${total}`;
+            if(cart.length === 0) {
+                container.innerHTML = `<p style="color:var(--muted); text-align:center; margin-top:40px;">No items selected</p>`;
+                return;
+            }
+            container.innerHTML = cart.map(i => `
+                <div class="bill-item">
+                    <span>${i.name}</span>
+                    <span style="font-weight:600">₹${i.price}</span>
+                </div>`).join('');
+        }
+
+        async function processPayment(mode) {
+            if(cart.length === 0) return alert("Select items first");
             await fetch(API_URL, {
                 method: "POST", mode: "no-cors",
                 body: JSON.stringify({
@@ -54,12 +124,10 @@
                     items: cart, totalAmount: total, paymentMode: mode, paymentStatus: "Paid"
                 })
             });
-            alert("Order sent to Kitchen!");
-            cart = []; total = 0;
-            document.getElementById('billTotal').innerText = "0";
-            document.getElementById('billItems').innerText = "No items selected";
+            alert("Order Submitted!");
+            cart = []; total = 0; renderBill();
         }
-        loadMenu();
+        loadPOSMenu();
     </script>
 </body>
 </html>
