@@ -2,31 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Kitchen Display System - Moncher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MONCHER - Kitchen KDS</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Lato', sans-serif; background: #FAF6F0; color: #1A1A1A; }
+  </style>
 </head>
-<body class="bg-[#FDFBF7] p-6 text-[#1A1A1A] font-sans min-h-screen">
-  <div class="border-b-2 border-[#C5A059]/40 pb-4 mb-6 flex justify-between items-center">
-    <h1 class="font-serif text-2xl font-bold text-[#58111A] tracking-wider uppercase">KITCHEN DISPLAY SYSTEM (KDS)</h1>
-    <span class="text-xs bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 font-bold">LIVE QUEUE</span>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <!-- Ticket Item -->
-    <div class="bg-[#FAF6F0] border-2 border-[#58111A] p-5 space-y-4">
-      <div class="flex justify-between items-center border-b border-[#C5A059]/40 pb-2">
-        <span class="font-bold text-sm text-[#58111A]">ORDER #104</span>
-        <span class="text-[10px] text-amber-800 font-bold bg-amber-100 border border-amber-300 px-2 py-0.5">PREPARING</span>
-      </div>
-      <ul class="text-xs space-y-2 font-semibold">
-        <li class="flex justify-between"><span>2x Stuff Kurkure Chaap</span> <span>Table 04</span></li>
-        <li class="flex justify-between"><span>1x Dal Makhani</span> <span>Table 04</span></li>
-      </ul>
-      <button onclick="this.parentElement.remove()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs uppercase font-bold tracking-widest hover:bg-[#3D0B12]">
-        Mark Order Ready
-      </button>
+<body class="h-screen flex flex-col p-6 overflow-hidden">
+  
+  <header class="flex justify-between items-center border-b-2 border-[#C5A059] pb-3 mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-[#58111A] tracking-wider uppercase">Kitchen Display System (KDS)</h1>
+      <p class="text-xs text-[#C5A059] font-bold uppercase">Live Google Sheet Sync</p>
     </div>
-  </div>
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-600 animate-pulse"></span>
+      <span class="text-xs font-bold text-[#58111A]">Live Feed (5s Polling)</span>
+    </div>
+  </header>
+
+  <main id="kdsOrdersList" class="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-y-auto flex-1 align-content-start">
+    <p class="text-sm text-gray-500 col-span-3 text-center py-12">Loading active tickets from Sheet...</p>
+  </main>
+
+  <script>
+    function fetchKdsData() {
+      google.script.run
+        .withSuccessHandler(renderKds)
+        .getActiveKitchenOrders();
+    }
+
+    function renderKds(data) {
+      const container = document.getElementById('kdsOrdersList');
+      const activeTickets = data.preparing || [];
+
+      if (activeTickets.length === 0) {
+        container.innerHTML = `<p class="text-sm text-gray-500 col-span-3 text-center py-12 font-bold">No active orders in preparation.</p>`;
+        return;
+      }
+
+      container.innerHTML = activeTickets.map(o => `
+        <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-md space-y-3 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2">
+              <div>
+                <h3 class="font-bold text-base text-[#58111A]">Table #${o.table}</h3>
+                <p class="text-[10px] text-[#C5A059] font-bold">${o.id} • ${o.time}</p>
+              </div>
+              <span class="bg-[#58111A] text-[#FDFBF7] text-[10px] px-2 py-0.5 uppercase font-bold">Preparing</span>
+            </div>
+            <div class="space-y-1 text-xs mt-3">
+              ${o.items.map(i => `<div class="flex justify-between py-0.5 border-b border-gray-100"><span>${i.name}</span><span class="font-bold">x${i.qty}</span></div>`).join('')}
+            </div>
+          </div>
+          <button onclick="markReady('${o.id}')" class="w-full bg-green-700 text-white py-2 text-xs font-bold uppercase tracking-wider hover:bg-green-800 transition-colors">
+            ✓ Mark Ready for Pickup
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function markReady(orderId) {
+      google.script.run
+        .withSuccessHandler(function() {
+          fetchKdsData();
+        })
+        .updateOrderStatus(orderId, "Ready");
+    }
+
+    // Auto Refresh Every 5 Seconds
+    fetchKdsData();
+    setInterval(fetchKdsData, 5000);
+  </script>
 </body>
 </html>
