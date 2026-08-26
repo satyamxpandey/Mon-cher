@@ -9,12 +9,16 @@
   <style>
     body { font-family: 'Montserrat', sans-serif; background: #FDFBF7; color: #1A1A1A; }
     .font-serif-classic { font-family: 'Playfair Display', serif; }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background: #FAF6F0; }
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
 
   <!-- Header -->
-  <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-3 flex justify-between items-center shadow-sm">
+  <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-3 flex justify-between items-center shadow-sm shrink-0">
     <div>
       <h1 class="font-serif-classic text-xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
       <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-semibold">Fine Dining & Lounge</p>
@@ -38,34 +42,34 @@
   <main class="flex-1 overflow-hidden">
     
     <!-- 1. BILLING & POS SECTION -->
-    <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4">
+    <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4 overflow-hidden">
       
       <!-- Menu Selection (Left Column) -->
-      <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden">
+      <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
         
-        <!-- Category Filter -->
-        <div class="flex gap-2 mb-4 overflow-x-auto pb-2 border-b border-[#C5A059]/30">
-          <button onclick="filterPosCat('ALL')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-xs font-bold uppercase">All</button>
-          <button onclick="filterPosCat('Chef Special')" class="border border-[#C5A059]/40 px-3 py-1 text-xs font-bold uppercase hover:bg-[#58111A] hover:text-[#FDFBF7]">Chef Special</button>
-          <button onclick="filterPosCat('Tandoori & Grills')" class="border border-[#C5A059]/40 px-3 py-1 text-xs font-bold uppercase hover:bg-[#58111A] hover:text-[#FDFBF7]">Grills</button>
-          <button onclick="filterPosCat('Main Course')" class="border border-[#C5A059]/40 px-3 py-1 text-xs font-bold uppercase hover:bg-[#58111A] hover:text-[#FDFBF7]">Mains</button>
-          <button onclick="filterPosCat('Beverages')" class="border border-[#C5A059]/40 px-3 py-1 text-xs font-bold uppercase hover:bg-[#58111A] hover:text-[#FDFBF7]">Drinks</button>
+        <!-- Category Filter (Fixed Alignment Issue) -->
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30 shrink-0">
+          <button onclick="filterPosCat('ALL')" id="pos-cat-ALL" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm transition-all">All Items</button>
+          <button onclick="filterPosCat('Chef Special')" id="pos-cat-Chef Special" class="pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">Chef Special</button>
+          <button onclick="filterPosCat('Tandoori & Grills')" id="pos-cat-Tandoori & Grills" class="pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">Grills</button>
+          <button onclick="filterPosCat('Main Course')" id="pos-cat-Main Course" class="pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">Mains</button>
+          <button onclick="filterPosCat('Beverages')" id="pos-cat-Beverages" class="pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">Drinks</button>
         </div>
 
         <!-- Menu Grid -->
-        <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1"></div>
+        <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start"></div>
       </div>
 
       <!-- Current Order & Cart (Right Column) -->
-      <div class="col-span-5 flex flex-col bg-[#FDFBF7] border-2 border-[#C5A059] p-4">
+      <div class="col-span-5 flex flex-col bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm">
         <h2 class="font-serif-classic text-base font-bold text-[#58111A] uppercase border-b border-[#C5A059]/30 pb-2">
           Current Order
         </h2>
 
         <!-- Table No Selection -->
-        <div class="my-3 flex items-center gap-2">
-          <label class="text-xs font-bold text-[#58111A] uppercase">Table No:</label>
-          <input type="number" id="posTableNo" placeholder="e.g. 05" class="w-24 border border-[#C5A059] px-2 py-1 text-xs font-bold bg-[#FAF6F0] text-[#58111A]">
+        <div class="my-3 flex items-center justify-between bg-[#FAF6F0] p-2 border border-[#C5A059]/30">
+          <label class="text-xs font-bold text-[#58111A] uppercase">Table Number:</label>
+          <input type="number" id="posTableNo" placeholder="e.g. 05" class="w-24 border border-[#C5A059] px-2 py-1 text-xs font-bold bg-[#FDFBF7] text-[#58111A] outline-none text-center">
         </div>
 
         <!-- Cart Items List -->
@@ -74,17 +78,17 @@
         </div>
 
         <!-- Order Summary & Actions -->
-        <div class="pt-3 space-y-2">
-          <div class="flex justify-between text-xs font-bold text-[#58111A]">
+        <div class="pt-3 space-y-2 shrink-0">
+          <div class="flex justify-between items-center text-xs font-bold text-[#58111A] bg-[#FAF6F0] p-2 border border-[#C5A059]/20">
             <span>Total Payable Amount</span>
-            <span id="posTotalSum" class="font-serif-classic text-sm">₹0.00</span>
+            <span id="posTotalSum" class="font-serif-classic text-base text-[#58111A]">₹0.00</span>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 pt-2">
-            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50">
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50 transition-colors">
               Clear Cart
             </button>
-            <button onclick="sendToKitchen()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12]">
+            <button onclick="sendToKitchen()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] transition-colors shadow-sm">
               Send To Kitchen KDS
             </button>
           </div>
@@ -130,7 +134,7 @@
   </main>
 
   <script>
-    // Full Menu Database
+    // Menu Data
     const menuDatabase = [
       { id: "M01", category: "Chef Special", name: "Stuff Kurkure Chaap", price: 500 },
       { id: "M02", category: "Chef Special", name: "Stuff Tandoori Mushroom", price: 500 },
@@ -175,6 +179,13 @@
 
     function filterPosCat(cat) {
       currentPosCategory = cat;
+      document.querySelectorAll('.pos-cat-btn').forEach(b => {
+        b.className = "pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all";
+      });
+      const activeBtn = document.getElementById(`pos-cat-${cat}`);
+      if(activeBtn) {
+        activeBtn.className = "pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm transition-all";
+      }
       renderPosMenu();
     }
 
@@ -182,19 +193,42 @@
       const container = document.getElementById('posMenuList');
       const filtered = menuDatabase.filter(i => currentPosCategory === "ALL" || i.category === currentPosCategory);
 
-      container.innerHTML = filtered.map(item => `
-        <div onclick="addPosItem('${item.id}')" class="bg-[#FDFBF7] border border-[#C5A059]/40 p-3 cursor-pointer hover:border-[#58111A] transition-all">
-          <h4 class="font-serif-classic font-bold text-xs text-[#58111A]">${item.name}</h4>
-          <p class="text-[10px] text-[#C5A059] font-bold uppercase mt-1">${item.category}</p>
-          <p class="font-bold text-xs text-[#1A1A1A] mt-1">₹${item.price.toFixed(2)}</p>
-        </div>
-      `).join('');
+      container.innerHTML = filtered.map(item => {
+        const cartItem = posCart.find(c => c.id === item.id);
+        const qty = cartItem ? cartItem.qty : 0;
+
+        return `
+          <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-3 flex flex-col justify-between hover:border-[#58111A] transition-all shadow-sm rounded-sm">
+            <div>
+              <h4 class="font-serif-classic font-bold text-xs text-[#58111A] leading-snug">${item.name}</h4>
+              <p class="text-[9px] text-[#C5A059] font-bold uppercase mt-1 tracking-wider">${item.category}</p>
+            </div>
+            
+            <div class="flex justify-between items-center mt-3 pt-2 border-t border-[#C5A059]/20">
+              <p class="font-bold text-xs text-[#1A1A1A]">₹${item.price.toFixed(2)}</p>
+              
+              ${qty > 0 ? `
+                <div class="flex items-center border border-[#C5A059] bg-[#FAF6F0]">
+                  <button onclick="changePosQty('${item.id}', -1)" class="w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20">-</button>
+                  <span class="w-6 text-center font-bold text-xs text-[#58111A]">${qty}</span>
+                  <button onclick="changePosQty('${item.id}', 1)" class="w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20">+</button>
+                </div>
+              ` : `
+                <button onclick="addPosItem('${item.id}')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase hover:bg-[#3D0B12] transition-colors">
+                  + Add
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function addPosItem(id) {
       const item = menuDatabase.find(i => i.id === id);
       const exist = posCart.find(c => c.id === id);
       if(exist) exist.qty++; else posCart.push({...item, qty: 1});
+      renderPosMenu();
       renderPosCart();
     }
 
@@ -203,6 +237,7 @@
       if(!item) return;
       item.qty += delta;
       if(item.qty <= 0) posCart = posCart.filter(c => c.id !== id);
+      renderPosMenu();
       renderPosCart();
     }
 
@@ -215,15 +250,15 @@
       }
 
       container.innerHTML = posCart.map(c => `
-        <div class="flex justify-between items-center bg-[#FAF6F0] p-2 border border-[#C5A059]/20 text-xs">
-          <div class="flex-1">
+        <div class="flex justify-between items-center bg-[#FAF6F0] p-2 border border-[#C5A059]/30 text-xs">
+          <div class="flex-1 pr-2">
             <p class="font-bold text-[#58111A]">${c.name}</p>
-            <p class="text-[10px] text-gray-500">₹${c.price} x ${c.qty}</p>
+            <p class="text-[10px] text-gray-500">₹${c.price} × ${c.qty}</p>
           </div>
           <div class="flex items-center border border-[#C5A059] bg-[#FDFBF7] mr-2">
-            <button onclick="changePosQty('${c.id}', -1)" class="w-5 h-5 font-bold text-[#58111A]">-</button>
+            <button onclick="changePosQty('${c.id}', -1)" class="w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20">-</button>
             <span class="w-5 text-center font-bold text-[11px]">${c.qty}</span>
-            <button onclick="changePosQty('${c.id}', 1)" class="w-5 h-5 font-bold text-[#58111A]">+</button>
+            <button onclick="changePosQty('${c.id}', 1)" class="w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20">+</button>
           </div>
           <span class="font-bold text-[#58111A]">₹${(c.price * c.qty).toFixed(2)}</span>
         </div>
@@ -236,6 +271,7 @@
     function clearPosCart() {
       posCart = [];
       document.getElementById('posTableNo').value = '';
+      renderPosMenu();
       renderPosCart();
     }
 
