@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Cher - Billing Counter</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; }
+        h1 { color: #D4AF37; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: #1E1E1E; padding: 15px; border-radius: 8px; border: 1px solid #333; }
+        .btn { background: #D4AF37; color: #000; padding: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Billing POS Counter</h1>
+    <div class="grid">
+        <div class="card" id="menuList">Loading Menu...</div>
+        <div class="card">
+            <h3>Current Order</h3>
+            <div id="billItems">No items selected</div>
+            <h3>Total: ₹<span id="billTotal">0</span></h3>
+            <button class="btn" onclick="placeOrder('Cash')">Pay via Cash</button>
+            <button class="btn" onclick="placeOrder('Razorpay')">Pay via Dynamic UPI</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
+        let cart = [], total = 0;
+
+        async function loadMenu() {
+            const res = await fetch(`${API_URL}?action=getMenu`);
+            const json = await res.json();
+            const list = document.getElementById('menuList');
+            list.innerHTML = '<h3>Select Items</h3>';
+            json.data.forEach(item => {
+                list.innerHTML += `<p>${item.Name} - ₹${item.Price} <button onclick="addItem('${item.Name}', ${item.Price})">Add</button></p>`;
+            });
+        }
+
+        function addItem(name, price) {
+            cart.push({ name, price });
+            total += price;
+            document.getElementById('billTotal').innerText = total;
+            document.getElementById('billItems').innerHTML = cart.map(i => `<div>${i.name} - ₹${i.price}</div>`).join('');
+        }
+
+        async function placeOrder(mode) {
+            if (cart.length === 0) return;
+            await fetch(API_URL, {
+                method: "POST", mode: "no-cors",
+                body: JSON.stringify({
+                    action: "createOrder", source: "Billing", tableNo: "Counter",
+                    items: cart, totalAmount: total, paymentMode: mode, paymentStatus: "Paid"
+                })
+            });
+            alert("Order sent to Kitchen!");
+            cart = []; total = 0;
+            document.getElementById('billTotal').innerText = "0";
+            document.getElementById('billItems').innerText = "No items selected";
+        }
+        loadMenu();
+    </script>
+</body>
+</html>
