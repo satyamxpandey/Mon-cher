@@ -15,7 +15,6 @@
 </head>
 <body class="h-screen flex flex-col p-6 overflow-hidden">
   
-  <!-- Header -->
   <header class="flex justify-between items-center border-b-2 border-[#C5A059] pb-3 mb-6 shrink-0">
     <div>
       <h1 class="text-2xl font-bold text-[#58111A] tracking-wider uppercase">Kitchen Display System (KDS)</h1>
@@ -27,12 +26,12 @@
     </div>
   </header>
 
-  <!-- Ticket Grid Area -->
   <main id="kdsOrdersList" class="grid grid-cols-1 md:grid-cols-3 gap-4 overflow-y-auto flex-1 align-content-start pr-1">
     <p class="text-sm text-gray-500 col-span-3 text-center py-12 font-bold">Connecting to Kitchen Stream...</p>
   </main>
 
   <script>
+    var API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
     var lastSyncHash = "";
 
     try {
@@ -46,24 +45,11 @@
       }
     } catch (e) {}
 
-    function fetchKdsData() {
-      if (typeof google !== "undefined" && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(renderKds)
-          .withFailureHandler(function(err) {
-            console.error("KDS Fetch Error:", err);
-          })
-          .getActiveKitchenOrders();
-      }
-    }
-
-    function renderKds(data) {
+    window.handleKdsStream = function(data) {
       var activeTickets = (data && data.preparing) ? data.preparing : [];
       var currentHash = JSON.stringify(activeTickets);
       
-      if (currentHash === lastSyncHash) {
-        return;
-      }
+      if (currentHash === lastSyncHash) return;
       lastSyncHash = currentHash;
 
       var container = document.getElementById("kdsOrdersList");
@@ -100,23 +86,34 @@
           '</button>' +
         '</div>';
       }).join("");
+    };
+
+    function fetchKdsData() {
+      var oldScript = document.getElementById("kds-jsonp-script");
+      if (oldScript) oldScript.remove();
+
+      var script = document.createElement("script");
+      script.id = "kds-jsonp-script";
+      script.src = API_URL + "?action=getKitchenOrders&callback=handleKdsStream&_t=" + Date.now();
+      document.head.appendChild(script);
     }
 
     function markReady(orderId) {
-      if (typeof google !== "undefined" && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(function() {
-            lastSyncHash = "";
-            try {
-              if (typeof BroadcastChannel !== "undefined") {
-                var channel = new BroadcastChannel("moncher_order_stream");
-                channel.postMessage("STATUS_CHANGE");
-              }
-            } catch (e) {}
-            fetchKdsData();
-          })
-          .updateOrderStatus(orderId, "Ready");
-      }
+      fetch(API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: "Ready" })
+      }).then(function() {
+        lastSyncHash = "";
+        try {
+          if (typeof BroadcastChannel !== "undefined") {
+            var channel = new BroadcastChannel("moncher_order_stream");
+            channel.postMessage("STATUS_CHANGE");
+          }
+        } catch (e) {}
+        fetchKdsData();
+      });
     }
 
     window.addEventListener("DOMContentLoaded", function() {
