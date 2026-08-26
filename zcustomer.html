@@ -1,177 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Cher - Order Online</title>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #D4AF37;
-            --primary-dark: #AA8B22;
-            --bg: #0F0F12;
-            --surface: #18181C;
-            --surface-card: #222228;
-            --border: #2E2E38;
-            --text: #FFFFFF;
-            --text-muted: #9E9EA9;
-            --accent-green: #22C55E;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding-bottom: 110px; }
-
-        .app-header {
-            position: sticky; top: 0; z-index: 100;
-            background: rgba(24, 24, 28, 0.85); backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border); padding: 14px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .brand { display: flex; align-items: center; gap: 12px; }
-        .brand img { width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--primary); }
-        .brand-name { font-weight: 700; font-size: 1.1rem; color: #FFF; }
-        .table-badge {
-            background: rgba(212, 175, 55, 0.15); color: var(--primary);
-            border: 1px solid var(--primary); padding: 4px 10px;
-            border-radius: 20px; font-size: 0.75rem; font-weight: 600;
-        }
-
-        .container { max-width: 500px; margin: 0 auto; padding: 16px; }
-
-        .category-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 20px 0 12px; font-weight: 700; }
-
-        .item-card {
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 14px; padding: 16px; margin-bottom: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-        .item-card:active { transform: scale(0.99); }
-        .item-info { flex: 1; padding-right: 16px; }
-        .item-title { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
-        .item-price { color: var(--primary); font-weight: 700; font-size: 1.05rem; }
-
-        .add-btn {
-            background: var(--surface-card); border: 1px solid var(--primary);
-            color: var(--primary); padding: 8px 18px; border-radius: 8px;
-            font-weight: 700; font-size: 0.85rem; cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .add-btn:hover { background: var(--primary); color: #000; }
-
-        .cart-bar {
-            position: fixed; bottom: 16px; left: 16px; right: 16px; max-width: 468px; margin: 0 auto;
-            background: var(--primary); color: #000; border-radius: 14px; padding: 14px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3); font-weight: 700; cursor: pointer;
-        }
-        .cart-bar button {
-            background: #000; color: #FFF; border: none; padding: 10px 18px;
-            border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
-        }
-
-        .spinner { border: 3px solid #333; border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 40px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+  <meta charset="UTF-8">
+  <title>Menu - Moncher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="bg-[#FDFBF7] text-[#1A1A1A] font-sans pb-12">
+  <header class="text-center py-10 border-b-2 border-[#C5A059]/40 bg-[#FAF6F0]">
+    <h1 class="font-serif text-4xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
+    <div class="w-16 h-0.5 bg-[#C5A059] mx-auto my-2"></div>
+    <p class="text-xs text-[#C5A059] uppercase tracking-widest font-semibold">Fine Dining & Lounge</p>
+  </header>
 
-    <div class="app-header">
-        <div class="brand">
-            <img src="https://i.pinimg.com/736x/bd/d0/5c/bdd05c94afb66b5a72f5e17a7a879ab3.jpg" alt="Logo">
-            <div class="brand-name">Mon Cher</div>
+  <main class="max-w-3xl mx-auto p-6 space-y-10">
+    <!-- Category -->
+    <section class="space-y-4">
+      <h2 class="font-serif text-2xl font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-2">Chef Specials</h2>
+      <div class="space-y-4">
+        <div class="flex justify-between items-baseline border-b border-dotted border-[#C5A059]/40 pb-2">
+          <div>
+            <h3 class="font-serif font-bold text-base text-[#1A1A1A]">Stuff Kurkure Chaap</h3>
+            <p class="text-xs text-[#1A1A1A]/60">House-special spiced soy chaap with crisp coating</p>
+          </div>
+          <span class="font-bold text-[#58111A] text-sm">₹500.00</span>
         </div>
-        <div class="table-badge">TABLE T-01</div>
-    </div>
-
-    <div class="container">
-        <div class="category-title">Menu Selection</div>
-        <div id="menuContainer"><div class="spinner"></div></div>
-    </div>
-
-    <div class="cart-bar" id="cartBar" style="display: none;" onclick="payNow()">
-        <div>
-            <div id="cartCount" style="font-size: 0.8rem; opacity: 0.8;">0 ITEMS</div>
-            <div id="cartTotal" style="font-size: 1.2rem;">₹0</div>
+        <div class="flex justify-between items-baseline border-b border-dotted border-[#C5A059]/40 pb-2">
+          <div>
+            <h3 class="font-serif font-bold text-base text-[#1A1A1A]">Bhatti Chicken Barra</h3>
+            <p class="text-xs text-[#1A1A1A]/60">Slow-roasted smoky bhatti chicken morsels</p>
+          </div>
+          <span class="font-bold text-[#58111A] text-sm">₹550.00</span>
         </div>
-        <button>Place Order →</button>
-    </div>
-
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
-        const RAZORPAY_KEY = "rzp_test_TURMp23SkIADHg";
-        let cart = [], total = 0;
-
-        async function fetchMenu() {
-            try {
-                const res = await fetch(`${API_URL}?action=getMenu`);
-                const json = await res.json();
-                const container = document.getElementById('menuContainer');
-                container.innerHTML = '';
-                
-                json.data.forEach(item => {
-                    if (item.Is_Available) {
-                        container.innerHTML += `
-                            <div class="item-card">
-                                <div class="item-info">
-                                    <div class="item-title">${item.Name}</div>
-                                    <div class="item-price">₹${item.Price}</div>
-                                </div>
-                                <button class="add-btn" onclick="addToCart('${item.Name}', ${item.Price})">+ ADD</button>
-                            </div>`;
-                    }
-                });
-            } catch (err) {
-                document.getElementById('menuContainer').innerHTML = `<p style="color:red">Failed to load menu</p>`;
-            }
-        }
-
-        function addToCart(name, price) {
-            cart.push({ name, price });
-            total += price;
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const bar = document.getElementById('cartBar');
-            if (cart.length > 0) {
-                bar.style.display = 'flex';
-                document.getElementById('cartCount').innerText = `${cart.length} ITEM${cart.length > 1 ? 'S' : ''}`;
-                document.getElementById('cartTotal').innerText = `₹${total}`;
-            } else {
-                bar.style.display = 'none';
-            }
-        }
-
-        function payNow() {
-            if (total === 0) return;
-            const options = {
-                "key": RAZORPAY_KEY,
-                "amount": total * 100,
-                "currency": "INR",
-                "name": "Mon Cher Cafe",
-                "description": "Order Payment",
-                "handler": function (response) { saveOrder(response.razorpay_payment_id); },
-                "theme": { "color": "#D4AF37" }
-            };
-            new Razorpay(options).open();
-        }
-
-        async function saveOrder(payId) {
-            await fetch(API_URL, {
-                method: "POST", mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "createOrder", source: "QR", tableNo: "T-01",
-                    items: cart, totalAmount: total, paymentMode: "Razorpay",
-                    paymentStatus: "Paid", razorpayPaymentId: payId
-                })
-            });
-            alert("Order placed successfully!");
-            cart = []; total = 0; updateCartUI();
-        }
-        fetchMenu();
-    </script>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
