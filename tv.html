@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Cher - Live Order Status</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #000; color: #fff; margin: 0; padding: 20px; text-align: center; }
+        h1 { color: #D4AF37; font-size: 3rem; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .col { background: #1E1E1E; padding: 20px; border-radius: 12px; min-height: 70vh; }
+        .col h2 { border-bottom: 2px solid #D4AF37; padding-bottom: 10px; }
+        .ticket { font-size: 2rem; font-weight: bold; margin: 15px 0; color: #D4AF37; }
+    </style>
+</head>
+<body>
+    <h1>MON CHER LIVE ORDERS</h1>
+    <div class="grid">
+        <div class="col">
+            <h2>PREPARING</h2>
+            <div id="preparingList"></div>
+        </div>
+        <div class="col">
+            <h2 style="color: #4CAF50;">READY FOR PICKUP</h2>
+            <div id="readyList"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
+
+        async function updateTV() {
+            const res = await fetch(`${API_URL}?action=getActiveOrders`);
+            const json = await res.json();
+            const prep = document.getElementById('preparingList');
+            const ready = document.getElementById('readyList');
+            prep.innerHTML = ''; ready.innerHTML = '';
+
+            json.data.forEach(order => {
+                if (order.Order_Status === "Preparing" || order.Order_Status === "Received") {
+                    prep.innerHTML += `<div class="ticket">${order.Order_ID}</div>`;
+                } else if (order.Order_Status === "Ready") {
+                    ready.innerHTML += `<div class="ticket" style="color:#4CAF50;">${order.Order_ID}</div>`;
+                }
+            });
+        }
+        setInterval(updateTV, 4000);
+        updateTV();
+    </script>
+</body>
+</html>
