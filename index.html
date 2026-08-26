@@ -40,7 +40,7 @@
     <!-- 1. BILLING & POS SECTION -->
     <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4 overflow-hidden">
       
-      <!-- Menu Area (Left Column) -->
+      <!-- Menu Selection (Left) -->
       <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
         <div class="flex gap-2 mb-4 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30 shrink-0" id="categoryTabs">
           <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm">All Items</button>
@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      <!-- Current Order Cart (Right Column) -->
+      <!-- Current Order Cart (Right) -->
       <div class="col-span-5 flex flex-col bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm">
         <h2 class="text-base font-bold text-[#58111A] uppercase border-b border-[#C5A059]/30 pb-2">Current Order</h2>
         <div class="my-3 flex items-center justify-between bg-[#FAF6F0] p-2 border border-[#C5A059]/30">
@@ -305,6 +305,11 @@
 
       google.script.run
         .withSuccessHandler(function(res) {
+          try {
+            var channel = new BroadcastChannel('moncher_order_stream');
+            channel.postMessage('NEW_ORDER_SYNC');
+          } catch(e){}
+
           alert('Order #' + res.orderId + ' successfully sent to Kitchen for Table #' + tbl + '!');
           btn.innerText = "Send To Kitchen KDS";
           btn.disabled = false;
