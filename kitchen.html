@@ -1,84 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Kitchen Display System (KDS)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0A0A0C; --surface: #141417; --border: #24242A;
-            --primary: #D4AF37; --blue: #3B82F6; --green: #22C55E; --orange: #F97316;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: #FFF; padding: 24px; }
-
-        .kds-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-
-        .ticket { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-        .ticket.Preparing { border-color: var(--orange); }
-        .ticket.Ready { border-color: var(--green); }
-
-        .ticket-header { padding: 14px; background: rgba(255,255,255,0.03); display: flex; justify-content: space-between; font-weight: 700; border-bottom: 1px solid var(--border); }
-        .ticket-body { padding: 16px; flex: 1; font-size: 0.95rem; }
-        .ticket-actions { padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--border); }
-
-        .btn { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
-        .btn-prep { background: var(--orange); color: #FFF; }
-        .btn-ready { background: var(--green); color: #FFF; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Kitchen Display System - Moncher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="bg-[#FDFBF7] p-6 text-[#1A1A1A] font-sans min-h-screen">
+  <div class="border-b-2 border-[#C5A059]/40 pb-4 mb-6 flex justify-between items-center">
+    <h1 class="font-serif text-2xl font-bold text-[#58111A] tracking-wider uppercase">KITCHEN DISPLAY SYSTEM (KDS)</h1>
+    <span class="text-xs bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 font-bold">LIVE QUEUE</span>
+  </div>
 
-    <div class="kds-header">
-        <h1 style="color:var(--primary);">KITCHEN DISPLAY (KDS)</h1>
-        <div id="liveTimer" style="color: gray;">Live Auto-Sync Active</div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Ticket Item -->
+    <div class="bg-[#FAF6F0] border-2 border-[#58111A] p-5 space-y-4">
+      <div class="flex justify-between items-center border-b border-[#C5A059]/40 pb-2">
+        <span class="font-bold text-sm text-[#58111A]">ORDER #104</span>
+        <span class="text-[10px] text-amber-800 font-bold bg-amber-100 border border-amber-300 px-2 py-0.5">PREPARING</span>
+      </div>
+      <ul class="text-xs space-y-2 font-semibold">
+        <li class="flex justify-between"><span>2x Stuff Kurkure Chaap</span> <span>Table 04</span></li>
+        <li class="flex justify-between"><span>1x Dal Makhani</span> <span>Table 04</span></li>
+      </ul>
+      <button onclick="this.parentElement.remove()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs uppercase font-bold tracking-widest hover:bg-[#3D0B12]">
+        Mark Order Ready
+      </button>
     </div>
-
-    <div class="grid" id="kdsContainer">Loading tickets...</div>
-
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
-
-        async function fetchKDS() {
-            const res = await fetch(`${API_URL}?action=getActiveOrders`);
-            const json = await res.json();
-            const container = document.getElementById('kdsContainer');
-            container.innerHTML = '';
-
-            json.data.forEach(order => {
-                if (order.Order_Status !== "Served") {
-                    let itemsHtml = "";
-                    try {
-                        const parsed = JSON.parse(order.Items);
-                        itemsHtml = parsed.map(i => `<div>• ${i.name}</div>`).join('');
-                    } catch(e) { itemsHtml = order.Items; }
-
-                    container.innerHTML += `
-                        <div class="ticket ${order.Order_Status}">
-                            <div class="ticket-header">
-                                <span>#${order.Order_ID}</span>
-                                <span style="color:var(--primary)">${order.Table_No}</span>
-                            </div>
-                            <div class="ticket-body">${itemsHtml}</div>
-                            <div class="ticket-actions">
-                                <button class="btn btn-prep" onclick="updateStatus('${order.Order_ID}', 'Preparing')">Preparing</button>
-                                <button class="btn btn-ready" onclick="updateStatus('${order.Order_ID}', 'Ready')">Ready</button>
-                            </div>
-                        </div>`;
-                }
-            });
-        }
-
-        async function updateStatus(orderId, status) {
-            await fetch(API_URL, {
-                method: "POST", mode: "no-cors",
-                body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: status })
-            });
-            fetchKDS();
-        }
-        setInterval(fetchKDS, 5000);
-        fetchKDS();
-    </script>
+  </div>
 </body>
 </html>
