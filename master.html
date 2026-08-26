@@ -15,7 +15,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- 1. Authentication Modal -->
+  <!-- Authentication Modal -->
   <div id="loginOverlay" class="fixed inset-0 bg-[#58111A]/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="bg-[#FDFBF7] border-2 border-[#C5A059] w-full max-w-md p-8 shadow-2xl rounded-sm">
       <div class="text-center mb-6">
@@ -42,10 +42,9 @@
     </div>
   </div>
 
-  <!-- 2. Master Dashboard Content -->
+  <!-- Dashboard Container -->
   <div id="dashboardApp" class="hidden flex-1 flex flex-col">
     
-    <!-- Top Header Bar -->
     <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-4 flex justify-between items-center shadow-sm shrink-0">
       <div>
         <h1 class="text-2xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
@@ -60,10 +59,9 @@
       </div>
     </header>
 
-    <!-- Main Analytics Content -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
 
-      <!-- Time Filter Controls -->
+      <!-- Filter Controls -->
       <div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-4 shadow-sm flex flex-wrap justify-between items-center gap-4">
         <div class="flex flex-wrap gap-2" id="filterBtnGroup">
           <button onclick="setFilter('today')" id="btn-today" class="filter-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase tracking-wider cursor-pointer">Today</button>
@@ -84,8 +82,6 @@
 
       <!-- KPI Summary Cards -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        
-        <!-- Total Revenue -->
         <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm space-y-2">
           <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Total Sales Revenue</p>
           <h3 id="statRevenue" class="text-2xl font-bold text-[#58111A]">₹0.00</h3>
@@ -94,27 +90,23 @@
           </div>
         </div>
 
-        <!-- Total Orders -->
         <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
           <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Total Orders Served</p>
           <h3 id="statOrders" class="text-2xl font-bold text-[#58111A]">0</h3>
           <p class="text-[10px] text-gray-500 font-bold" id="statOrdersCompare">vs. previous period</p>
         </div>
 
-        <!-- Average Order Value -->
         <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
           <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Avg. Order Value (AOV)</p>
           <h3 id="statAov" class="text-2xl font-bold text-[#58111A]">₹0.00</h3>
           <p class="text-[10px] text-gray-500 font-bold">Per Table Transaction</p>
         </div>
 
-        <!-- Top Selling Category -->
         <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
           <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Top Revenue Category</p>
           <h3 id="statTopCategory" class="text-xl font-bold text-[#58111A]">--</h3>
           <p class="text-[10px] text-gray-500 font-bold" id="statTopCatPercent">0% of total sales</p>
         </div>
-
       </div>
 
       <!-- Performance Insights Box -->
@@ -174,6 +166,7 @@
   </div>
 
   <script>
+    var API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
     var allOrders = [];
     var activeFilter = "today";
 
@@ -199,18 +192,19 @@
       document.getElementById("loginError").classList.add("hidden");
     }
 
+    window.handleAnalyticsData = function(data) {
+      allOrders = data || [];
+      processDashboard(activeFilter);
+    };
+
     function fetchLiveAnalyticsData() {
-      if (typeof google !== "undefined" && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(function(data) {
-            allOrders = data || [];
-            processDashboard(activeFilter);
-          })
-          .withFailureHandler(function(err) {
-            console.error("Analytics Sync Error:", err);
-          })
-          .getMasterAnalytics();
-      }
+      var oldScript = document.getElementById("analytics-jsonp-script");
+      if (oldScript) oldScript.remove();
+
+      var script = document.createElement("script");
+      script.id = "analytics-jsonp-script";
+      script.src = API_URL + "?action=getMasterAnalytics&callback=handleAnalyticsData&_t=" + Date.now();
+      document.head.appendChild(script);
     }
 
     function setFilter(type) {
@@ -352,9 +346,7 @@
           var qty = Number(i.qty || 1);
           var price = Number(i.price || 0) * qty;
 
-          if (!catMap[cat]) {
-            catMap[cat] = { name: cat, items: 0, rev: 0 };
-          }
+          if (!catMap[cat]) catMap[cat] = { name: cat, items: 0, rev: 0 };
           catMap[cat].items += qty;
           catMap[cat].rev += price;
           totalItemsSold += qty;
