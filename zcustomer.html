@@ -7,10 +7,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Lato', sans-serif; background: #FDFBF7; color: #1A1A1A; }
+    body { font-family: 'Lato', sans-serif; background-color: #FDFBF7; color: #1A1A1A; }
     ::-webkit-scrollbar { width: 3px; height: 3px; }
-    ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 4px; }
-    ::-webkit-scrollbar-track { background: #FAF6F0; }
+    ::-webkit-scrollbar-thumb { background-color: #C5A059; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background-color: #FAF6F0; }
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden select-none">
@@ -26,7 +26,7 @@
         <input type="number" id="custTableInput" placeholder="e.g. 05" class="w-full bg-[#FAF6F0] border border-[#C5A059] text-center py-2 text-lg font-bold text-[#58111A] outline-none">
       </div>
 
-      <button onclick="confirmTableNumber()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12]">
+      <button onclick="confirmTableNumber()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] cursor-pointer">
         Start Ordering
       </button>
     </div>
@@ -46,12 +46,12 @@
 
   <!-- Category Pills Navigation -->
   <div class="bg-[#FAF6F0] border-b border-[#C5A059]/30 px-3 py-2 flex gap-2 overflow-x-auto shrink-0" id="categoryTabs">
-    <button onclick="filterCategory('ALL')" class="cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap">All</button>
+    <button onclick="filterCategory('ALL')" class="cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap cursor-pointer">All</button>
   </div>
 
   <!-- Menu Item Feed -->
   <main id="customerMenuList" class="flex-1 overflow-y-auto p-3 space-y-3">
-    <p class="text-xs text-center text-gray-400 py-12">Loading menu...</p>
+    <p class="text-xs text-center text-gray-400 py-12 font-bold">Connecting to Moncher Live API...</p>
   </main>
 
   <!-- Floating Sticky Cart Bar -->
@@ -60,7 +60,7 @@
       <p class="text-[10px] text-gray-500 font-bold uppercase"><span id="cartCount">0</span> Items in Cart</p>
       <p id="cartTotal" class="text-sm font-bold text-[#58111A]">₹0.00</p>
     </div>
-    <button onclick="openCartDrawer()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-5 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] shadow-sm">
+    <button onclick="openCartDrawer()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-5 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] shadow-sm cursor-pointer">
       View Cart / Order
     </button>
   </div>
@@ -70,7 +70,7 @@
     <div class="bg-[#FDFBF7] border-t-2 border-[#C5A059] p-4 max-h-[80vh] flex flex-col shadow-2xl rounded-t-lg">
       <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2 mb-3">
         <h2 class="text-sm font-bold text-[#58111A] uppercase">Your Order Summary</h2>
-        <button onclick="closeCartDrawer()" class="text-xs font-bold text-gray-500 hover:text-[#58111A]">✕ Close</button>
+        <button onclick="closeCartDrawer()" class="text-xs font-bold text-gray-500 hover:text-[#58111A] cursor-pointer">✕ Close</button>
       </div>
 
       <div id="drawerCartList" class="flex-1 overflow-y-auto space-y-2 py-1 max-h-56"></div>
@@ -81,8 +81,8 @@
           <span id="drawerTotalSum" class="text-base">₹0.00</span>
         </div>
 
-        <button onclick="placeCustomerOrder()" id="btnPlaceOrder" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] shadow-md">
-          Confirm & Send To Kitchen
+        <button onclick="placeCustomerOrder()" id="btnPlaceOrder" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] shadow-md cursor-pointer">
+          Confirm &amp; Send To Kitchen
         </button>
       </div>
     </div>
@@ -94,53 +94,60 @@
     <h2 class="text-xl font-bold tracking-wider uppercase mb-1">Order Received!</h2>
     <p class="text-xs text-[#C5A059] font-bold uppercase mb-4" id="successOrderId">Order #ORD-XXXX</p>
     <p class="text-xs text-gray-200 max-w-xs mb-6">Your order has been sent directly to the kitchen. You can track your table number on the status screen.</p>
-    <button onclick="resetCustomerSession()" class="bg-[#FDFBF7] text-[#58111A] border border-[#C5A059] px-6 py-2 text-xs font-bold uppercase tracking-wider">
+    <button onclick="resetCustomerSession()" class="bg-[#FDFBF7] text-[#58111A] border border-[#C5A059] px-6 py-2 text-xs font-bold uppercase tracking-wider cursor-pointer">
       Order More Items
     </button>
   </div>
 
   <script>
+    var API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
     var menuData = [];
     var custCart = [];
     var activeCategory = "ALL";
     var customerTable = null;
 
-    window.onload = function() {
+    window.addEventListener("DOMContentLoaded", function() {
       detectTableFromUrl();
-      loadMenuData();
-    };
+      fetchMenuFromAPI();
+    });
 
     function detectTableFromUrl() {
       var params = new URLSearchParams(window.location.search);
-      var tbl = params.get('table');
+      var tbl = params.get("table");
       if (tbl) {
         setTableNumber(tbl);
       }
     }
 
     function confirmTableNumber() {
-      var val = document.getElementById('custTableInput').value.trim();
-      if (!val) { alert('Please enter your table number.'); return; }
+      var val = document.getElementById("custTableInput").value.trim();
+      if (!val) { alert("Please enter your table number."); return; }
       setTableNumber(val);
     }
 
     function setTableNumber(tbl) {
       customerTable = tbl;
-      document.getElementById('displayTableNum').innerText = '#' + tbl;
-      document.getElementById('tableModal').classList.add('hidden');
+      document.getElementById("displayTableNum").innerText = "#" + tbl;
+      document.getElementById("tableModal").classList.add("hidden");
     }
 
-    function loadMenuData() {
-      google.script.run
-        .withSuccessHandler(function(res) {
-          menuData = res.menu;
-          renderCategoryPills();
-          renderCustomerMenu();
-        })
-        .withFailureHandler(function(err) {
-          alert('Failed to load menu: ' + err.message);
-        })
-        .getInitialData();
+    window.handleCustomerMenuData = function(res) {
+      if (!res || !res.menu || res.menu.length === 0) {
+        document.getElementById("customerMenuList").innerHTML = "<p class='text-xs text-red-600 text-center py-10 font-bold'>Menu is currently unavailable.</p>";
+        return;
+      }
+      menuData = res.menu;
+      renderCategoryPills();
+      renderCustomerMenu();
+    };
+
+    function fetchMenuFromAPI() {
+      var script = document.createElement("script");
+      script.src = API_URL + "?action=getInitialData&callback=handleCustomerMenuData&_t=" + Date.now();
+      script.onerror = function() {
+        document.getElementById("customerMenuList").innerHTML = "<div class='p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to connect to menu API.</div>";
+      };
+      document.head.appendChild(script);
     }
 
     function renderCategoryPills() {
@@ -151,26 +158,26 @@
         }
       }
 
-      var container = document.getElementById('categoryTabs');
+      var container = document.getElementById("categoryTabs");
       container.innerHTML = cats.map(function(c) {
-        var activeClass = (c === activeCategory) ? 'bg-[#58111A] text-[#FDFBF7]' : 'bg-[#FDFBF7] text-[#58111A]';
-        return '<button onclick="filterCategory(\'' + c + '\')" id="cat-btn-' + c.replace(/[^a-zA-Z0-9]/g, '_') + '" class="cat-btn ' + activeClass + ' border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap">' + c + '</button>';
-      }).join('');
+        var activeClass = (c === activeCategory) ? "bg-[#58111A] text-[#FDFBF7]" : "bg-[#FDFBF7] text-[#58111A]";
+        return "<button onclick=\"filterCategory('" + c + "')\" id=\"cat-btn-" + c.replace(/[^a-zA-Z0-9]/g, "_") + "\" class=\"cat-btn " + activeClass + " border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap cursor-pointer\">" + c + "</button>";
+      }).join("");
     }
 
     function filterCategory(cat) {
       activeCategory = cat;
-      var buttons = document.querySelectorAll('.cat-btn');
+      var buttons = document.querySelectorAll(".cat-btn");
       buttons.forEach(function(b) {
-        b.className = "cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap";
+        b.className = "cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap cursor-pointer";
       });
-      var activeBtn = document.getElementById('cat-btn-' + cat.replace(/[^a-zA-Z0-9]/g, '_'));
-      if (activeBtn) activeBtn.className = "cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm";
+      var activeBtn = document.getElementById("cat-btn-" + cat.replace(/[^a-zA-Z0-9]/g, "_"));
+      if (activeBtn) activeBtn.className = "cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm cursor-pointer";
       renderCustomerMenu();
     }
 
     function renderCustomerMenu() {
-      var container = document.getElementById('customerMenuList');
+      var container = document.getElementById("customerMenuList");
       var filtered = menuData.filter(function(i) {
         return activeCategory === "ALL" || i.category === activeCategory;
       });
@@ -178,30 +185,30 @@
       container.innerHTML = filtered.map(function(item) {
         var cartItem = custCart.find(function(c) { return c.id === item.id; });
         var qty = cartItem ? cartItem.qty : 0;
-        var dotColor = item.veg ? 'bg-green-600' : 'bg-red-600';
+        var dotColor = item.veg ? "bg-green-600" : "bg-red-600";
 
         var actionMarkup = (qty > 0)
-          ? '<div class="flex items-center border border-[#C5A059] bg-[#FDFBF7]">' +
-              '<button onclick="updateQty(\'' + item.id + '\', -1)" class="w-6 h-6 font-bold text-[#58111A]">-</button>' +
-              '<span class="w-6 text-center font-bold text-xs">' + qty + '</span>' +
-              '<button onclick="updateQty(\'' + item.id + '\', 1)" class="w-6 h-6 font-bold text-[#58111A]">+</button>' +
-            '</div>'
-          : '<button onclick="updateQty(\'' + item.id + '\', 1)" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase">' +
-              '+ Add' +
-            '</button>';
+          ? "<div class=\"flex items-center border border-[#C5A059] bg-[#FDFBF7]\">" +
+              "<button onclick=\"updateQty('" + item.id + "', -1)\" class=\"w-6 h-6 font-bold text-[#58111A] cursor-pointer\">-</button>" +
+              "<span class=\"w-6 text-center font-bold text-xs\">" + qty + "</span>" +
+              "<button onclick=\"updateQty('" + item.id + "', 1)\" class=\"w-6 h-6 font-bold text-[#58111A] cursor-pointer\">+</button>" +
+            "</div>"
+          : "<button onclick=\"updateQty('" + item.id + "', 1)\" class=\"bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase cursor-pointer\">" +
+              "+ Add" +
+            "</button>";
 
-        return '<div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-3 flex justify-between items-center rounded-sm shadow-xs">' +
-          '<div class="flex-1 pr-3">' +
-            '<div class="flex items-center gap-1.5">' +
-              '<span class="inline-block w-2 h-2 rounded-full ' + dotColor + '"></span>' +
-              '<h3 class="font-bold text-xs text-[#58111A]">' + item.name + '</h3>' +
-            '</div>' +
-            '<p class="text-[9px] text-[#C5A059] uppercase font-bold mt-0.5">' + item.category + '</p>' +
-            '<p class="text-xs font-bold text-[#1A1A1A] mt-1">₹' + item.price.toFixed(2) + '</p>' +
-          '</div>' +
-          '<div>' + actionMarkup + '</div>' +
-        '</div>';
-      }).join('');
+        return "<div class=\"bg-[#FAF6F0] border border-[#C5A059]/40 p-3 flex justify-between items-center rounded-sm shadow-xs\">" +
+          "<div class=\"flex-1 pr-3\">" +
+            "<div class=\"flex items-center gap-1.5\">" +
+              "<span class=\"inline-block w-2 h-2 rounded-full " + dotColor + "\"></span>" +
+              "<h3 class=\"font-bold text-xs text-[#58111A]\">" + item.name + "</h3>" +
+            "</div>" +
+            "<p class=\"text-[9px] text-[#C5A059] uppercase font-bold mt-0.5\">" + item.category + "</p>" +
+            "<p class=\"text-xs font-bold text-[#1A1A1A] mt-1\">₹" + item.price.toFixed(2) + "</p>" +
+          "</div>" +
+          "<div>" + actionMarkup + "</div>" +
+        "</div>";
+      }).join("");
     }
 
     function updateQty(id, delta) {
@@ -231,56 +238,56 @@
       var totalItems = custCart.reduce(function(sum, i) { return sum + i.qty; }, 0);
       var totalCost = custCart.reduce(function(sum, i) { return sum + (i.price * i.qty); }, 0);
 
-      document.getElementById('cartCount').innerText = totalItems;
-      document.getElementById('cartTotal').innerText = '₹' + totalCost.toFixed(2);
-      document.getElementById('drawerTotalSum').innerText = '₹' + totalCost.toFixed(2);
+      document.getElementById("cartCount").innerText = totalItems;
+      document.getElementById("cartTotal").innerText = "₹" + totalCost.toFixed(2);
+      document.getElementById("drawerTotalSum").innerText = "₹" + totalCost.toFixed(2);
 
       renderDrawerList();
     }
 
     function openCartDrawer() {
-      if (custCart.length === 0) { alert('Your cart is empty.'); return; }
-      document.getElementById('cartDrawer').classList.remove('hidden');
+      if (custCart.length === 0) { alert("Your cart is empty."); return; }
+      document.getElementById("cartDrawer").classList.remove("hidden");
     }
 
     function closeCartDrawer() {
-      document.getElementById('cartDrawer').classList.add('hidden');
+      document.getElementById("cartDrawer").classList.add("hidden");
     }
 
     function renderDrawerList() {
-      var container = document.getElementById('drawerCartList');
+      var container = document.getElementById("drawerCartList");
       if (custCart.length === 0) {
-        container.innerHTML = '<p class="text-xs text-center text-gray-400 py-6 font-bold">No items selected</p>';
+        container.innerHTML = "<p class='text-xs text-center text-gray-400 py-6 font-bold'>No items selected</p>";
         return;
       }
 
       container.innerHTML = custCart.map(function(i) {
-        return '<div class="flex justify-between items-center text-xs py-1 border-b border-gray-100">' +
-          '<div>' +
-            '<p class="font-bold text-[#58111A]">' + i.name + '</p>' +
-            '<p class="text-[10px] text-gray-500">₹' + i.price + ' × ' + i.qty + '</p>' +
-          '</div>' +
-          '<div class="flex items-center gap-2">' +
-            '<div class="flex items-center border border-[#C5A059]">' +
-              '<button onclick="updateQty(\'' + i.id + '\', -1)" class="w-5 h-5 text-center font-bold">-</button>' +
-              '<span class="w-5 text-center font-bold text-[11px]">' + i.qty + '</span>' +
-              '<button onclick="updateQty(\'' + i.id + '\', 1)" class="w-5 h-5 text-center font-bold">+</button>' +
-            '</div>' +
-            '<span class="font-bold text-[#58111A] min-w-[50px] text-right">₹' + (i.price * i.qty).toFixed(2) + '</span>' +
-          '</div>' +
-        '</div>';
-      }).join('');
+        return "<div class=\"flex justify-between items-center text-xs py-1 border-b border-gray-100\">" +
+          "<div>" +
+            "<p class=\"font-bold text-[#58111A]\">" + i.name + "</p>" +
+            "<p class=\"text-[10px] text-gray-500\">₹" + i.price + " × " + i.qty + "</p>" +
+          "</div>" +
+          "<div class=\"flex items-center gap-2\">" +
+            "<div class=\"flex items-center border border-[#C5A059]\">" +
+              "<button onclick=\"updateQty('" + i.id + "', -1)\" class=\"w-5 h-5 text-center font-bold cursor-pointer\">-</button>" +
+              "<span class=\"w-5 text-center font-bold text-[11px]\">" + i.qty + "</span>" +
+              "<button onclick=\"updateQty('" + i.id + "', 1)\" class=\"w-5 h-5 text-center font-bold cursor-pointer\">+</button>" +
+            "</div>" +
+            "<span class=\"font-bold text-[#58111A] min-w-[50px] text-right\">₹" + (i.price * i.qty).toFixed(2) + "</span>" +
+          "</div>" +
+        "</div>";
+      }).join("");
     }
 
     function placeCustomerOrder() {
       if (!customerTable) {
-        alert('Table number missing. Please set your table.');
-        document.getElementById('tableModal').classList.remove('hidden');
+        alert("Table number missing. Please set your table.");
+        document.getElementById("tableModal").classList.remove("hidden");
         return;
       }
 
       var totalCost = custCart.reduce(function(sum, i) { return sum + (i.price * i.qty); }, 0);
-      var btn = document.getElementById('btnPlaceOrder');
+      var btn = document.getElementById("btnPlaceOrder");
       btn.innerText = "Transmitting Order...";
       btn.disabled = true;
 
@@ -291,32 +298,38 @@
         paymentMode: "Self-Order (Pending)"
       };
 
-      google.script.run
-        .withSuccessHandler(function(res) {
-          try {
-            var channel = new BroadcastChannel('moncher_order_stream');
-            channel.postMessage('NEW_ORDER_SYNC');
-          } catch(e){}
+      fetch(API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "submitOrder", data: orderData })
+      })
+      .then(function() {
+        try {
+          if (typeof BroadcastChannel !== "undefined") {
+            var channel = new BroadcastChannel("moncher_order_stream");
+            channel.postMessage("NEW_ORDER_SYNC");
+          }
+        } catch(e){}
 
-          btn.innerText = "Confirm & Send To Kitchen";
-          btn.disabled = false;
-          closeCartDrawer();
-          document.getElementById('successOrderId').innerText = 'Ticket #' + res.orderId;
-          document.getElementById('successModal').classList.remove('hidden');
-        })
-        .withFailureHandler(function(err) {
-          alert('Error submitting order: ' + err.message);
-          btn.innerText = "Confirm & Send To Kitchen";
-          btn.disabled = false;
-        })
-        .submitNewOrder(orderData);
+        btn.innerText = "Confirm & Send To Kitchen";
+        btn.disabled = false;
+        closeCartDrawer();
+        document.getElementById("successOrderId").innerText = "Table #" + customerTable;
+        document.getElementById("successModal").classList.remove("hidden");
+      })
+      .catch(function(err) {
+        alert("Error submitting order: " + err.message);
+        btn.innerText = "Confirm & Send To Kitchen";
+        btn.disabled = false;
+      });
     }
 
     function resetCustomerSession() {
       custCart = [];
       syncCartTotals();
       renderCustomerMenu();
-      document.getElementById('successModal').classList.add('hidden');
+      document.getElementById("successModal").classList.add("hidden");
     }
   </script>
 </body>
