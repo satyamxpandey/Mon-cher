@@ -30,13 +30,13 @@
       <input type="number" id="tableNo" placeholder="e.g. 05" class="w-full bg-[#FDFBF7] border border-[#C5A059]/60 px-4 py-2 text-sm font-bold text-[#58111A] focus:outline-none focus:border-[#58111A]">
     </div>
 
-    <!-- Category Filter Tabs -->
-    <div class="flex gap-2 overflow-x-auto pb-2 border-b border-[#C5A059]/30" id="catFilter">
-      <button onclick="filterCat('ALL')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">All</button>
-      <button onclick="filterCat('Chef Special')" class="border border-[#C5A059]/40 px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">Chef Special</button>
-      <button onclick="filterCat('Tandoori & Grills')" class="border border-[#C5A059]/40 px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">Grills</button>
-      <button onclick="filterCat('Main Course')" class="border border-[#C5A059]/40 px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">Mains</button>
-      <button onclick="filterCat('Beverages')" class="border border-[#C5A059]/40 px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">Drinks</button>
+    <!-- Category Filter Tabs (Fixed Clipping Issue) -->
+    <div class="flex gap-2 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30" id="catFilter">
+      <button onclick="filterCat('ALL')" id="cust-cat-ALL" class="cust-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm">All</button>
+      <button onclick="filterCat('Chef Special')" id="cust-cat-Chef Special" class="cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap">Chef Special</button>
+      <button onclick="filterCat('Tandoori & Grills')" id="cust-cat-Tandoori & Grills" class="cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap">Grills</button>
+      <button onclick="filterCat('Main Course')" id="cust-cat-Main Course" class="cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap">Mains</button>
+      <button onclick="filterCat('Beverages')" id="cust-cat-Beverages" class="cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap">Drinks</button>
     </div>
 
     <!-- Full Menu Items List -->
@@ -89,7 +89,6 @@
   </div>
 
   <script>
-    // Full Menu Items Array
     const customerMenu = [
       { id: "M01", category: "Chef Special", name: "Stuff Kurkure Chaap", price: 500, desc: "Crispy fried soy chaap filled with rich cottage cheese" },
       { id: "M02", category: "Chef Special", name: "Stuff Tandoori Mushroom", price: 500, desc: "Clay oven roasted mushrooms stuffed with herbs" },
@@ -120,6 +119,13 @@
 
     function filterCat(cat) {
       currentCategory = cat;
+      document.querySelectorAll('.cust-cat-btn').forEach(b => {
+        b.className = "cust-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap";
+      });
+      const active = document.getElementById(`cust-cat-${cat}`);
+      if(active) {
+        active.className = "cust-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-[11px] font-bold uppercase whitespace-nowrap shadow-sm";
+      }
       renderMenu();
     }
 
