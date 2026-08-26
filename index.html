@@ -7,10 +7,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Lato', sans-serif; background: #FDFBF7; color: #1A1A1A; }
+    body { font-family: 'Lato', sans-serif; background-color: #FDFBF7; color: #1A1A1A; }
     ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 4px; }
-    ::-webkit-scrollbar-track { background: #FAF6F0; }
+    ::-webkit-scrollbar-thumb { background-color: #C5A059; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background-color: #FAF6F0; }
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
@@ -19,7 +19,7 @@
   <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-3 flex justify-between items-center shadow-sm shrink-0">
     <div>
       <h1 class="text-xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
-      <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-semibold">Fine Dining & Lounge</p>
+      <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-semibold">Fine Dining &amp; Lounge</p>
     </div>
     
     <div class="flex items-center gap-4">
@@ -28,8 +28,8 @@
         <span id="activeDateBadge" class="text-xs font-bold text-[#58111A] ml-1 bg-[#FAF6F0] px-2 py-0.5 border border-[#C5A059]/40">--</span>
       </div>
       <nav class="flex gap-2">
-        <button onclick="switchTab('billing')" id="tab-billing" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]">Billing & POS</button>
-        <button onclick="switchTab('dayend')" id="tab-dayend" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]">Day Management</button>
+        <button onclick="switchTab('billing')" id="tab-billing" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7] cursor-pointer">Billing &amp; POS</button>
+        <button onclick="switchTab('dayend')" id="tab-dayend" class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0] cursor-pointer">Day Management</button>
       </nav>
     </div>
   </header>
@@ -43,9 +43,11 @@
       <!-- Menu Selection Area -->
       <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
         <div class="flex gap-2 mb-4 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30 shrink-0" id="categoryTabs">
-          <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm">All Items</button>
+          <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm cursor-pointer">All Items</button>
         </div>
-        <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start"></div>
+        <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start">
+          <p class="text-xs text-gray-500 col-span-2 text-center py-10 font-bold">Connecting to Moncher Live API...</p>
+        </div>
       </div>
 
       <!-- Current Order Cart -->
@@ -67,8 +69,8 @@
           </div>
 
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50 transition-colors">Clear Cart</button>
-            <button onclick="sendToKitchen()" id="btnSendKds" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] transition-colors shadow-sm">Send To Kitchen KDS</button>
+            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50 transition-colors cursor-pointer">Clear Cart</button>
+            <button onclick="sendToKitchen()" id="btnSendKds" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] transition-colors shadow-sm cursor-pointer">Send To Kitchen KDS</button>
           </div>
         </div>
       </div>
@@ -77,7 +79,7 @@
     <!-- 2. DAY MANAGEMENT SECTION -->
     <section id="sec-dayend" class="h-full p-8 hidden bg-[#FAF6F0] flex items-center justify-center">
       <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-6 max-w-md w-full shadow-lg space-y-4">
-        <h2 class="text-lg font-bold text-[#58111A] uppercase border-b border-[#C5A059]/40 pb-2">Business Day Closing & Rollover</h2>
+        <h2 class="text-lg font-bold text-[#58111A] uppercase border-b border-[#C5A059]/40 pb-2">Business Day Closing &amp; Rollover</h2>
         <div>
           <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Enter Next Working Date:</label>
           <input type="date" id="nextActiveDate" class="w-full bg-[#FAF6F0] border border-[#C5A059] p-2 text-xs font-bold text-[#58111A] outline-none">
@@ -86,8 +88,8 @@
           <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Closing Notes / Remarks:</label>
           <input type="text" id="closingNotes" placeholder="Standard Shift Close" class="w-full bg-[#FAF6F0] border border-[#C5A059] p-2 text-xs text-[#58111A] outline-none">
         </div>
-        <button onclick="confirmDayRollover()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] transition-colors shadow-md">
-          Close Current Day & Set New Date
+        <button onclick="confirmDayRollover()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] transition-colors shadow-md cursor-pointer">
+          Close Current Day &amp; Set New Date
         </button>
       </div>
     </section>
@@ -95,56 +97,34 @@
   </main>
 
   <script>
-    // 1. Direct Server Data Injection (Instantly loaded by Code.gs)
-    var injected = {};
-    try {
-      injected = <?!= initialPayload ?>;
-    } catch(e) {
-      injected = {};
-    }
+    var API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
 
-    var menuDatabase = (injected && injected.menu) ? injected.menu : [];
+    var menuDatabase = [];
     var posCart = [];
     var currentPosCategory = "ALL";
-    var activeWorkingDate = (injected && injected.currentDate) ? injected.currentDate : "";
+    var activeWorkingDate = "";
 
-    window.addEventListener('DOMContentLoaded', function() {
-      // Agar direct injected data maujood hai toh turant render karein
-      if (menuDatabase && menuDatabase.length > 0) {
-        document.getElementById('activeDateBadge').innerText = activeWorkingDate;
-        buildCategoryTabs();
-        renderPosMenu();
-      } else {
-        // Fallback Async Call
-        fetchViaAsync();
-      }
+    window.addEventListener("DOMContentLoaded", function() {
+      fetchMenuFromAPI();
     });
 
-    function fetchViaAsync() {
-      google.script.run
-        .withSuccessHandler(function(data) {
+    function fetchMenuFromAPI() {
+      fetch(API_URL + "?action=getInitialData")
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
           if (!data || !data.menu || data.menu.length === 0) {
-            document.getElementById('posMenuList').innerHTML = 
-              '<div class="col-span-2 p-6 text-center bg-amber-50 border border-amber-300 text-[#58111A]">' +
-                '<p class="text-xs font-bold uppercase">Menu tab is empty or headers are mismatching.</p>' +
-                '<p class="text-[11px] text-gray-600 mt-1">Please ensure your Sheet tab is named exactly <b>Menu</b> with columns: ID, Category, Name, Price, Veg</p>' +
-              '</div>';
+            document.getElementById("posMenuList").innerHTML = "<p class='text-xs text-red-600 col-span-2 text-center py-10 font-bold'>Menu is empty in Google Sheet.</p>";
             return;
           }
           menuDatabase = data.menu;
           activeWorkingDate = data.currentDate;
-          document.getElementById('activeDateBadge').innerText = activeWorkingDate;
+          document.getElementById("activeDateBadge").innerText = activeWorkingDate;
           buildCategoryTabs();
           renderPosMenu();
         })
-        .withFailureHandler(function(err) {
-          document.getElementById('posMenuList').innerHTML = 
-            '<div class="col-span-2 p-6 text-center bg-red-50 border border-red-300 text-red-700">' +
-              '<p class="text-xs font-bold uppercase">Database Error:</p>' +
-              '<p class="text-[11px] mt-1 font-semibold">' + err.message + '</p>' +
-            '</div>';
-        })
-        .getInitialData();
+        .catch(function(err) {
+          document.getElementById("posMenuList").innerHTML = "<div class='col-span-2 p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to connect to backend: " + err.message + "</div>";
+        });
     }
 
     function buildCategoryTabs() {
@@ -155,80 +135,80 @@
         }
       }
 
-      var container = document.getElementById('categoryTabs');
+      var container = document.getElementById("categoryTabs");
       container.innerHTML = categories.map(function(cat) {
-        var activeClass = (cat === 'ALL') ? 'bg-[#58111A] text-[#FDFBF7]' : 'bg-[#FDFBF7] text-[#58111A]';
-        return '<button onclick="filterPosCat(\'' + cat + '\')" id="pos-cat-' + cat.replace(/[^a-zA-Z0-9]/g, '_') + '" class="pos-cat-btn ' + activeClass + ' border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-xs hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">' + cat + '</button>';
-      }).join('');
+        var activeClass = (cat === "ALL") ? "bg-[#58111A] text-[#FDFBF7]" : "bg-[#FDFBF7] text-[#58111A]";
+        return "<button onclick=\"filterPosCat('" + cat + "')\" id=\"pos-cat-" + cat.replace(/[^a-zA-Z0-9]/g, "_") + "\" class=\"pos-cat-btn " + activeClass + " border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-xs hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all cursor-pointer\">" + cat + "</button>";
+      }).join("");
     }
 
     function switchTab(tab) {
-      document.getElementById('sec-billing').classList.toggle('hidden', tab !== 'billing');
-      document.getElementById('sec-dayend').classList.toggle('hidden', tab !== 'dayend');
+      document.getElementById("sec-billing").classList.toggle("hidden", tab !== "billing");
+      document.getElementById("sec-dayend").classList.toggle("hidden", tab !== "dayend");
       
-      document.getElementById('tab-billing').className = (tab === 'billing') 
-        ? "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]" 
-        : "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]";
+      document.getElementById("tab-billing").className = (tab === "billing") 
+        ? "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7] cursor-pointer" 
+        : "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0] cursor-pointer";
         
-      document.getElementById('tab-dayend').className = (tab === 'dayend') 
-        ? "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]" 
-        : "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]";
+      document.getElementById("tab-dayend").className = (tab === "dayend") 
+        ? "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7] cursor-pointer" 
+        : "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0] cursor-pointer";
     }
 
     function filterPosCat(cat) {
       currentPosCategory = cat;
-      var buttons = document.querySelectorAll('.pos-cat-btn');
+      var buttons = document.querySelectorAll(".pos-cat-btn");
       buttons.forEach(function(b) {
-        b.className = "pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all";
+        b.className = "pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all cursor-pointer";
       });
       
-      var targetBtn = document.getElementById('pos-cat-' + cat.replace(/[^a-zA-Z0-9]/g, '_'));
+      var targetBtn = document.getElementById("pos-cat-" + cat.replace(/[^a-zA-Z0-9]/g, "_"));
       if (targetBtn) {
-        targetBtn.className = "pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm transition-all";
+        targetBtn.className = "pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm transition-all cursor-pointer";
       }
       renderPosMenu();
     }
 
     function renderPosMenu() {
-      var container = document.getElementById('posMenuList');
+      var container = document.getElementById("posMenuList");
       var filtered = menuDatabase.filter(function(i) {
         return currentPosCategory === "ALL" || i.category === currentPosCategory;
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = '<p class="text-xs text-center text-gray-400 col-span-2 py-10 font-bold">No items found in this category.</p>';
+        container.innerHTML = "<p class='text-xs text-center text-gray-400 col-span-2 py-10 font-bold'>No items found in this category.</p>";
         return;
       }
 
       container.innerHTML = filtered.map(function(item) {
         var cartItem = posCart.find(function(c) { return c.id === item.id; });
         var qty = cartItem ? cartItem.qty : 0;
-        var dotColor = item.veg ? 'bg-green-600' : 'bg-red-600';
+        var dotColor = item.veg ? "bg-green-600" : "bg-red-600";
 
         var actionMarkup = (qty > 0)
-          ? '<div class="flex items-center border border-[#C5A059] bg-[#FAF6F0]">' +
-              '<button onclick="changePosQty(\'' + item.id + '\', -1)" class="w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20">-</button>' +
-              '<span class="w-6 text-center font-bold text-xs text-[#58111A]">' + qty + '</span>' +
-              '<button onclick="changePosQty(\'' + item.id + '\', 1)" class="w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20">+</button>' +
-            '</div>'
-          : '<button onclick="addPosItem(\'' + item.id + '\')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase hover:bg-[#3D0B12] transition-colors">' +
-              '+ Add' +
-            '</button>';
+          ? "<div class='flex items-center border border-[#C5A059] bg-[#FAF6F0]'>" +
+              "<button onclick=\"changePosQty('" + item.id + "', -1)\" class='w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20 cursor-pointer'>-</button>" +
+              "<span class='w-6 text-center font-bold text-xs text-[#58111A]'>" + qty + "</span>" +
+              "<button onclick=\"changePosQty('" + item.id + "', 1)\" class='w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20 cursor-pointer'>+</button>" +
+            "</div>"
+          : "<button onclick=\"addPosItem('" + item.id + "')\" class='bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase hover:bg-[#3D0B12] transition-colors cursor-pointer'>" +
+              "+ Add" +
+            "</button>";
 
-        return '<div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-3 flex flex-col justify-between hover:border-[#58111A] transition-all shadow-sm rounded-sm">' +
-          '<div>' +
-            '<div class="flex items-center gap-1.5">' +
-              '<span class="inline-block w-2 h-2 rounded-full ' + dotColor + '"></span>' +
-              '<h4 class="font-bold text-xs text-[#58111A] leading-snug">' + item.name + '</h4>' +
-            '</div>' +
-            '<p class="text-[9px] text-[#C5A059] font-bold uppercase mt-1 tracking-wider">' + item.category + '</p>' +
-          '</div>' +
-          '<div class="flex justify-between items-center mt-3 pt-2 border-t border-[#C5A059]/20">' +
-            '<p class="font-bold text-xs text-[#1A1A1A]">₹' + item.price.toFixed(2) + '</p>' +
+        return "<div class='bg-[#FDFBF7] border border-[#C5A059]/40 p-3 flex flex-col justify-between hover:border-[#58111A] transition-all shadow-sm rounded-sm'>" +
+          "<div>" +
+            "<div class='flex items-center gap-1.5'>" +
+              "<span class='inline-block w-2 h-2 rounded-full " + dotColor + "'></span>" +
+              "<h4 class='font-bold text-xs text-[#58111A] leading-snug'>" + item.name + "</h4>" +
+            "</div>" +
+            "<p class='text-[9px] text-[#C5A059] font-bold uppercase mt-1 tracking-wider'>" + item.category + "</p>" +
+          "</div>" +
+          "<div class='flex justify-between items-center mt-3 pt-2 border-t border-[#C5A059]/20'>" +
+            "<p class='font-bold text-xs text-[#1A1A1A]'>₹" + item.price.toFixed(2) + "</p>" +
             actionMarkup +
-          '</div>' +
-        '</div>';
-      }).join('');
+          "</div>" +
+        "</div>";
+      }).join("");
     }
 
     function addPosItem(id) {
@@ -237,13 +217,7 @@
       if (exist) {
         exist.qty++;
       } else {
-        posCart.push({
-          id: item.id,
-          category: item.category,
-          name: item.name,
-          price: item.price,
-          qty: 1
-        });
+        posCart.push({ id: item.id, category: item.category, name: item.name, price: item.price, qty: 1 });
       }
       renderPosMenu();
       renderPosCart();
@@ -261,101 +235,85 @@
     }
 
     function renderPosCart() {
-      var container = document.getElementById('posCartList');
+      var container = document.getElementById("posCartList");
       if (posCart.length === 0) {
-        container.innerHTML = '<p class="text-xs text-center text-gray-400 py-10 font-bold">No items added to order</p>';
-        document.getElementById('posTotalSum').innerText = '₹0.00';
+        container.innerHTML = "<p class='text-xs text-center text-gray-400 py-10 font-bold'>No items added to order</p>";
+        document.getElementById("posTotalSum").innerText = "₹0.00";
         return;
       }
 
       container.innerHTML = posCart.map(function(c) {
-        return '<div class="flex justify-between items-center bg-[#FAF6F0] p-2 border border-[#C5A059]/30 text-xs">' +
-          '<div class="flex-1 pr-2">' +
-            '<p class="font-bold text-[#58111A]">' + c.name + '</p>' +
-            '<p class="text-[10px] text-gray-500">₹' + c.price + ' × ' + c.qty + '</p>' +
-          '</div>' +
-          '<div class="flex items-center border border-[#C5A059] bg-[#FDFBF7] mr-2">' +
-            '<button onclick="changePosQty(\'' + c.id + '\', -1)" class="w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20">-</button>' +
-            '<span class="w-5 text-center font-bold text-[11px]">' + c.qty + '</span>' +
-            '<button onclick="changePosQty(\'' + c.id + '\', 1)" class="w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20">+</button>' +
-          '</div>' +
-          '<span class="font-bold text-[#58111A]">₹' + (c.price * c.qty).toFixed(2) + '</span>' +
-        '</div>';
-      }).join('');
+        return "<div class='flex justify-between items-center bg-[#FAF6F0] p-2 border border-[#C5A059]/30 text-xs'>" +
+          "<div class='flex-1 pr-2'>" +
+            "<p class='font-bold text-[#58111A]'>" + c.name + "</p>" +
+            "<p class='text-[10px] text-gray-500'>₹" + c.price + " × " + c.qty + "</p>" +
+          "</div>" +
+          "<div class='flex items-center border border-[#C5A059] bg-[#FDFBF7] mr-2'>" +
+            "<button onclick=\"changePosQty('" + c.id + "', -1)\" class='w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20 cursor-pointer'>-</button>" +
+            "<span class='w-5 text-center font-bold text-[11px]'>" + c.qty + "</span>" +
+            "<button onclick=\"changePosQty('" + c.id + "', 1)\" class='w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20 cursor-pointer'>+</button>" +
+          "</div>" +
+          "<span class='font-bold text-[#58111A]'>₹" + (c.price * c.qty).toFixed(2) + "</span>" +
+        "</div>";
+      }).join("");
 
       var total = posCart.reduce(function(sum, c) { return sum + (c.price * c.qty); }, 0);
-      document.getElementById('posTotalSum').innerText = '₹' + total.toFixed(2);
+      document.getElementById("posTotalSum").innerText = "₹" + total.toFixed(2);
     }
 
     function clearPosCart() {
       posCart = [];
-      document.getElementById('posTableNo').value = '';
+      document.getElementById("posTableNo").value = "";
       renderPosMenu();
       renderPosCart();
     }
 
     function sendToKitchen() {
-      var tbl = document.getElementById('posTableNo').value.trim();
-      if (!tbl) {
-        alert('Please enter a Table Number!');
-        return;
-      }
-      if (posCart.length === 0) {
-        alert('Cart is empty. Please add items to order.');
-        return;
-      }
+      var tbl = document.getElementById("posTableNo").value.trim();
+      if (!tbl) { alert("Please enter a Table Number!"); return; }
+      if (posCart.length === 0) { alert("Cart is empty."); return; }
 
       var total = posCart.reduce(function(s, c) { return s + (c.price * c.qty); }, 0);
-      var btn = document.getElementById('btnSendKds');
+      var btn = document.getElementById("btnSendKds");
       btn.innerText = "Transmitting to Sheet...";
       btn.disabled = true;
 
-      var orderPayload = {
-        table: tbl,
-        items: posCart,
-        total: total,
-        paymentMode: "POS Desk"
-      };
-
-      google.script.run
-        .withSuccessHandler(function(res) {
-          try {
-            var channel = new BroadcastChannel('moncher_order_stream');
-            channel.postMessage('NEW_ORDER_SYNC');
-          } catch(e){}
-
-          alert('Order #' + res.orderId + ' successfully sent to Kitchen for Table #' + tbl + '!');
-          btn.innerText = "Send To Kitchen KDS";
-          btn.disabled = false;
-          clearPosCart();
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "submitOrder",
+          data: { table: tbl, items: posCart, total: total, paymentMode: "POS Desk" }
         })
-        .withFailureHandler(function(err) {
-          alert("Order transmission failed: " + err.message);
-          btn.innerText = "Send To Kitchen KDS";
-          btn.disabled = false;
-        })
-        .submitNewOrder(orderPayload);
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        alert("Order #" + res.orderId + " sent to Kitchen!");
+        btn.innerText = "Send To Kitchen KDS";
+        btn.disabled = false;
+        clearPosCart();
+      })
+      .catch(function(err) {
+        alert("Order transmission failed: " + err.message);
+        btn.innerText = "Send To Kitchen KDS";
+        btn.disabled = false;
+      });
     }
 
     function confirmDayRollover() {
-      var nextDate = document.getElementById('nextActiveDate').value;
-      var notes = document.getElementById('closingNotes').value;
-      
-      if (!nextDate) {
-        alert('Please select a date to rollover.');
-        return;
-      }
+      var nextDate = document.getElementById("nextActiveDate").value;
+      var notes = document.getElementById("closingNotes").value;
+      if (!nextDate) { alert("Please select date."); return; }
 
-      if (confirm('Are you sure you want to close the current shift and set active working date to: ' + nextDate + '?')) {
-        google.script.run
-          .withSuccessHandler(function(res) {
-            alert('Working date rolled over to: ' + res.activeDate);
-            location.reload();
-          })
-          .withFailureHandler(function(err) {
-            alert('Rollover failed: ' + err.message);
-          })
-          .executeDayCloseAndSetNext(nextDate, notes);
+      if (confirm("Close shift and set working date to " + nextDate + "?")) {
+        fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "dayClose", nextDate: nextDate, notes: notes })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          alert("Working date set to " + res.activeDate);
+          location.reload();
+        });
       }
     }
   </script>
