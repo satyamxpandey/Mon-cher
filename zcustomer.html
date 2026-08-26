@@ -13,46 +13,50 @@
 </head>
 <body class="pb-28">
 
-  <!-- Mobile Luxury Header -->
-  <header class="sticky top-0 bg-[#FDFBF7]/95 backdrop-blur border-b-2 border-[#C5A059]/40 px-6 py-4 text-center z-40">
+  <!-- Header -->
+  <header class="sticky top-0 bg-[#FDFBF7]/95 backdrop-blur border-b-2 border-[#C5A059]/40 px-6 py-4 text-center z-40 shadow-sm">
     <h1 class="font-serif-classic text-2xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
     <div class="w-12 h-0.5 bg-[#C5A059] mx-auto my-1"></div>
-    <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-bold">Fine Dining Mobile Ordering</p>
+    <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-bold">Digital Self-Order & Pay</p>
   </header>
 
   <main class="max-w-md mx-auto p-4 space-y-6">
 
-    <!-- Table Number Selection Box -->
+    <!-- Table Number Selection -->
     <div class="bg-[#FAF6F0] border-2 border-[#C5A059] p-4 shadow-sm space-y-2">
       <label class="block text-xs font-bold text-[#58111A] uppercase tracking-wider">
-        📍 Enter Your Table Number:
+        📍 Enter Table Number:
       </label>
       <input type="number" id="tableNo" placeholder="e.g. 05" class="w-full bg-[#FDFBF7] border border-[#C5A059]/60 px-4 py-2 text-sm font-bold text-[#58111A] focus:outline-none focus:border-[#58111A]">
     </div>
 
-    <!-- Category Header -->
-    <div class="space-y-4">
-      <h2 class="font-serif-classic text-xl font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-2">Our Digital Menu</h2>
-
-      <!-- Menu Items List -->
-      <div id="customerMenuList" class="space-y-3"></div>
+    <!-- Category Filter Tabs -->
+    <div class="flex gap-2 overflow-x-auto pb-2 border-b border-[#C5A059]/30" id="catFilter">
+      <button onclick="filterCat('ALL')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">All</button>
+      <button onclick="filterCat('Chef Special')" class="border border-[#C5A059]/40 px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">Chef Special</button>
+      <button onclick="filterCat('Tandoori & Grills')" class="border border-[#C5A059]/40 px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">Grills</button>
+      <button onclick="filterCat('Main Course')" class="border border-[#C5A059]/40 px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">Mains</button>
+      <button onclick="filterCat('Beverages')" class="border border-[#C5A059]/40 px-3 py-1 text-[10px] font-bold uppercase whitespace-nowrap">Drinks</button>
     </div>
+
+    <!-- Full Menu Items List -->
+    <div id="customerMenuList" class="space-y-3"></div>
   </main>
 
-  <!-- Bottom Floating View Cart Button -->
+  <!-- Bottom Floating View Cart Bar -->
   <div id="bottomBar" class="fixed bottom-0 left-0 right-0 p-4 bg-[#FDFBF7]/90 backdrop-blur border-t-2 border-[#C5A059]/40 hidden z-30">
     <div class="max-w-md mx-auto flex justify-between items-center bg-[#58111A] text-[#FDFBF7] p-3.5 border border-[#C5A059] shadow-xl">
       <div>
-        <p id="totalItemsCount" class="text-[10px] text-[#C5A059] uppercase font-bold">0 Items Selected</p>
+        <p id="totalItemsCount" class="text-[10px] text-[#C5A059] uppercase font-bold">0 Items</p>
         <p id="cartTotalSum" class="font-serif-classic font-bold text-base">₹0.00</p>
       </div>
       <button onclick="openCheckoutModal()" class="bg-[#C5A059] text-[#58111A] px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#d4b06a]">
-        Pay Online Now →
+        Pay Online →
       </button>
     </div>
   </div>
 
-  <!-- Online Payment & Order Checkout Modal -->
+  <!-- Online Payment Modal -->
   <div id="paymentModal" class="fixed inset-0 bg-black/70 z-50 flex items-end sm:items-center justify-center hidden p-4">
     <div class="bg-[#FDFBF7] border-2 border-[#C5A059] w-full max-w-md p-6 space-y-4 relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeCheckoutModal()" class="absolute top-3 right-3 text-lg font-bold text-[#58111A]">✕</button>
@@ -62,17 +66,14 @@
         <p id="modalTableInfo" class="text-xs text-[#C5A059] font-semibold uppercase mt-0.5">Table # --</p>
       </div>
 
-      <!-- Itemized Order Summary -->
       <div id="modalOrderItems" class="space-y-2 text-xs border-b border-[#C5A059]/20 pb-3"></div>
 
-      <!-- Payment Method Selection -->
       <div class="space-y-2">
-        <p class="text-xs font-bold text-[#58111A] uppercase">Select Online Payment Method:</p>
-        
+        <p class="text-xs font-bold text-[#58111A] uppercase">Payment Options:</p>
         <div class="space-y-2">
           <label class="flex items-center gap-3 p-3 border border-[#C5A059]/40 bg-[#FAF6F0] cursor-pointer">
             <input type="radio" name="payMethod" value="upi" checked class="accent-[#58111A]">
-            <span class="text-xs font-bold">UPI (Google Pay / PhonePe / Paytm)</span>
+            <span class="text-xs font-bold">UPI (GPay / PhonePe / Paytm)</span>
           </label>
           <label class="flex items-center gap-3 p-3 border border-[#C5A059]/40 bg-[#FAF6F0] cursor-pointer">
             <input type="radio" name="payMethod" value="card" class="accent-[#58111A]">
@@ -88,20 +89,45 @@
   </div>
 
   <script>
+    // Full Menu Items Array
     const customerMenu = [
-      { id: "M01", name: "Stuff Kurkure Chaap", price: 500, desc: "Crispy fried soy chaap filled with rich cottage cheese" },
-      { id: "M02", name: "Stuff Tandoori Mushroom", price: 500, desc: "Clay oven roasted mushrooms stuffed with herbs" },
-      { id: "M03", name: "Cheese Mushroom Duplex", price: 500, desc: "Double mushroom caps stuffed with melted cheese" },
-      { id: "M04", name: "Bhatti Chicken Barra", price: 550, desc: "Slow roasted smoky bhatti chicken morsels" },
-      { id: "M05", name: "Dal Makhani", price: 450, desc: "Overnight cooked black lentils with white butter" },
-      { id: "M06", name: "Paneer Lababdar", price: 450, desc: "Cottage cheese cubes in rich tomato cashew gravy" }
+      { id: "M01", category: "Chef Special", name: "Stuff Kurkure Chaap", price: 500, desc: "Crispy fried soy chaap filled with rich cottage cheese" },
+      { id: "M02", category: "Chef Special", name: "Stuff Tandoori Mushroom", price: 500, desc: "Clay oven roasted mushrooms stuffed with herbs" },
+      { id: "M03", category: "Chef Special", name: "Cheese Mushroom Duplex", price: 500, desc: "Double mushroom caps stuffed with melted cheese" },
+      { id: "M04", category: "Chef Special", name: "Sharabi Tikka With Egg", price: 550, desc: "Infused marinated chicken roasted with egg coating" },
+      { id: "M05", category: "Chef Special", name: "Bhatti Chicken Barra", price: 550, desc: "Slow roasted smoky bhatti chicken morsels" },
+      { id: "M06", category: "Chef Special", name: "Chicken Rada Gravy", price: 600, desc: "Minced chicken cooked in rich spiced gravy" },
+
+      { id: "M07", category: "Tandoori & Grills", name: "Paneer Tikka (Achari/Haryali)", price: 400, desc: "Marinated cottage cheese grilled in tandoor" },
+      { id: "M08", category: "Tandoori & Grills", name: "Tandoori Chaap (Malai/Kurkure)", price: 400, desc: "Rich cream marinated soy chaap" },
+      { id: "M09", category: "Tandoori & Grills", name: "Tandoori Pineapple", price: 400, desc: "Sweet & spicy grilled pineapple slices" },
+      { id: "M10", category: "Tandoori & Grills", name: "Tandoori Chicken Tikka", price: 500, desc: "Classic smoky charred chicken tikka" },
+      { id: "M11", category: "Tandoori & Grills", name: "Sharbati Chicken Tikka", price: 600, desc: "Tender juice-infused spiced chicken tikka" },
+
+      { id: "M12", category: "Main Course", name: "Dal Makhani", price: 450, desc: "Overnight cooked black lentils with white butter" },
+      { id: "M13", category: "Main Course", name: "Paneer Lababdar", price: 450, desc: "Cottage cheese cubes in rich tomato cashew gravy" },
+      { id: "M14", category: "Main Course", name: "Rogan Josh (4 pcs.)", price: 750, desc: "Traditional Kashmiri style slow cooked mutton" },
+      { id: "M15", category: "Main Course", name: "Kashmiri Gosh Tabba with Rice", price: 900, desc: "Authentic tender meat tabba served with aromatic rice" },
+
+      { id: "M16", category: "Beverages", name: "Mojito Pitcher", price: 250, desc: "Refreshing mint and lime chiller" },
+      { id: "M17", category: "Beverages", name: "Fresh Lime Soda", price: 150, desc: "Sweet & salted fizzy soda" }
     ];
 
     let userCart = [];
+    let currentCategory = "ALL";
 
-    window.onload = function() {
+    window.onload = function() { renderMenu(); };
+
+    function filterCat(cat) {
+      currentCategory = cat;
+      renderMenu();
+    }
+
+    function renderMenu() {
       const container = document.getElementById('customerMenuList');
-      container.innerHTML = customerMenu.map(item => `
+      const filtered = customerMenu.filter(i => currentCategory === "ALL" || i.category === currentCategory);
+
+      container.innerHTML = filtered.map(item => `
         <div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-3.5 flex justify-between items-center shadow-sm">
           <div class="flex-1 pr-3">
             <h3 class="font-serif-classic font-bold text-sm text-[#58111A]">${item.name}</h3>
@@ -116,7 +142,8 @@
           </div>
         </div>
       `).join('');
-    };
+      updateUI();
+    }
 
     function addItem(id) {
       const item = customerMenu.find(i => i.id === id);
@@ -134,29 +161,28 @@
     }
 
     function updateUI() {
-      // Refresh individual item control buttons
       customerMenu.forEach(item => {
         const cartItem = userCart.find(c => c.id === item.id);
         const container = document.getElementById(`btn-container-${item.id}`);
-        
-        if(cartItem) {
-          container.innerHTML = `
-            <div class="flex items-center border border-[#C5A059] bg-[#FDFBF7]">
-              <button onclick="changeQty('${item.id}', -1)" class="w-7 h-7 font-bold text-[#58111A]">-</button>
-              <span class="w-6 text-center font-bold text-xs">${cartItem.qty}</span>
-              <button onclick="changeQty('${item.id}', 1)" class="w-7 h-7 font-bold text-[#58111A]">+</button>
-            </div>
-          `;
-        } else {
-          container.innerHTML = `
-            <button onclick="addItem('${item.id}')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1.5 text-xs font-bold uppercase">
-              + Add
-            </button>
-          `;
+        if(container) {
+          if(cartItem) {
+            container.innerHTML = `
+              <div class="flex items-center border border-[#C5A059] bg-[#FDFBF7]">
+                <button onclick="changeQty('${item.id}', -1)" class="w-7 h-7 font-bold text-[#58111A]">-</button>
+                <span class="w-6 text-center font-bold text-xs">${cartItem.qty}</span>
+                <button onclick="changeQty('${item.id}', 1)" class="w-7 h-7 font-bold text-[#58111A]">+</button>
+              </div>
+            `;
+          } else {
+            container.innerHTML = `
+              <button onclick="addItem('${item.id}')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1.5 text-xs font-bold uppercase">
+                + Add
+              </button>
+            `;
+          }
         }
       });
 
-      // Bottom Bar Update
       const totalQty = userCart.reduce((s, c) => s + c.qty, 0);
       const totalSum = userCart.reduce((s, c) => s + (c.price * c.qty), 0);
       
@@ -177,7 +203,6 @@
         document.getElementById('tableNo').focus();
         return;
       }
-
       document.getElementById('modalTableInfo').innerText = `ORDER FOR TABLE #${tbl}`;
       
       const itemsContainer = document.getElementById('modalOrderItems');
@@ -191,7 +216,7 @@
       const totalSum = userCart.reduce((s, c) => s + (c.price * c.qty), 0);
       itemsContainer.innerHTML += `
         <div class="flex justify-between font-bold text-sm text-[#58111A] pt-2">
-          <span>Total</span>
+          <span>Total Payable</span>
           <span>₹${totalSum.toFixed(2)}</span>
         </div>
       `;
@@ -205,11 +230,11 @@
 
     function processOnlinePayment() {
       const tbl = document.getElementById('tableNo').value;
-      alert(`Payment Successful!\nOrder sent to Kitchen for Table #${tbl}.`);
+      alert(`Payment Successful!\nOrder sent to Kitchen KDS for Table #${tbl}.`);
       userCart = [];
       document.getElementById('tableNo').value = '';
       closeCheckoutModal();
-      updateUI();
+      renderMenu();
     }
   </script>
 </body>
