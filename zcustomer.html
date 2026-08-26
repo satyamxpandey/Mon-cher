@@ -15,7 +15,7 @@
 </head>
 <body class="flex flex-col h-screen overflow-hidden select-none">
 
-  <!-- Table Lock Modal (If table is not detected) -->
+  <!-- Table Lock Modal -->
   <div id="tableModal" class="fixed inset-0 bg-[#58111A]/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-[#FDFBF7] border-2 border-[#C5A059] w-full max-w-xs p-6 shadow-2xl rounded-sm text-center">
       <h2 class="text-xl font-bold text-[#58111A] tracking-widest uppercase mb-1">Welcome</h2>
@@ -73,10 +73,8 @@
         <button onclick="closeCartDrawer()" class="text-xs font-bold text-gray-500 hover:text-[#58111A]">✕ Close</button>
       </div>
 
-      <!-- Cart Item List -->
       <div id="drawerCartList" class="flex-1 overflow-y-auto space-y-2 py-1 max-h-56"></div>
 
-      <!-- Bill Breakdown -->
       <div class="border-t border-[#C5A059]/30 pt-3 mt-3 space-y-2">
         <div class="flex justify-between items-center text-xs font-bold text-[#58111A]">
           <span>Total Bill</span>
@@ -112,7 +110,6 @@
       loadMenuData();
     };
 
-    // Auto-detect table from URL param ?table=5
     function detectTableFromUrl() {
       const params = new URLSearchParams(window.location.search);
       const tbl = params.get('table');
