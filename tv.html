@@ -1,63 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Live Tokens - Mon Cher</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg: #050505; --card: #121215; --primary: #D4AF37; --green: #22C55E; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg); color: #FFF; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-        header { background: var(--card); padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); }
-        h1 { color: var(--primary); font-size: 2.5rem; letter-spacing: 2px; }
-
-        .columns { display: flex; flex: 1; }
-        .col { flex: 1; padding: 30px; border-right: 1px solid #222; text-align: center; }
-        .col-title { font-size: 1.8rem; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #333; }
-
-        .token-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .token { background: var(--card); border: 2px solid #222; border-radius: 12px; padding: 20px; font-size: 2.2rem; font-weight: 800; }
-        .token.ready { border-color: var(--green); color: var(--green); animation: pulse 1.5s infinite; }
-
-        @keyframes pulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
-    </style>
+  <meta charset="UTF-8">
+  <title>Order Display Screen - Moncher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="bg-[#FDFBF7] h-screen p-8 flex flex-col justify-between font-sans">
+  <div class="text-center space-y-2 border-b-2 border-[#C5A059]/40 pb-4">
+    <h1 class="font-serif text-4xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
+    <p class="text-xs text-[#C5A059] font-semibold uppercase tracking-widest">Order Status Display</p>
+  </div>
 
-    <header><h1>MON CHER - ORDER STATUS</h1></header>
-
-    <div class="columns">
-        <div class="col">
-            <div class="col-title" style="color:var(--primary)">PREPARING</div>
-            <div class="token-grid" id="prepTokens"></div>
-        </div>
-        <div class="col" style="background: rgba(34, 197, 94, 0.02);">
-            <div class="col-title" style="color:var(--green)">READY FOR PICKUP</div>
-            <div class="token-grid" id="readyTokens"></div>
-        </div>
+  <div class="grid grid-cols-2 gap-8 flex-1 my-6">
+    <!-- Preparing Column -->
+    <div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-6">
+      <h2 class="font-serif text-2xl font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-3 text-center uppercase">Preparing</h2>
+      <div class="grid grid-cols-2 gap-4 mt-6 text-center">
+        <div class="bg-[#FDFBF7] border border-[#C5A059]/30 p-4 font-bold text-xl text-[#1A1A1A]">#104</div>
+        <div class="bg-[#FDFBF7] border border-[#C5A059]/30 p-4 font-bold text-xl text-[#1A1A1A]">#105</div>
+      </div>
     </div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
-
-        async function updateTV() {
-            const res = await fetch(`${API_URL}?action=getActiveOrders`);
-            const json = await res.json();
-            const prepContainer = document.getElementById('prepTokens');
-            const readyContainer = document.getElementById('readyTokens');
-            prepContainer.innerHTML = ''; readyContainer.innerHTML = '';
-
-            json.data.forEach(order => {
-                if (order.Order_Status === "Preparing" || order.Order_Status === "Received") {
-                    prepContainer.innerHTML += `<div class="token">${order.Order_ID}</div>`;
-                } else if (order.Order_Status === "Ready") {
-                    readyContainer.innerHTML += `<div class="token ready">${order.Order_ID}</div>`;
-                }
-            });
-        }
-        setInterval(updateTV, 4000);
-        updateTV();
-    </script>
+    <!-- Ready for Pickup Column -->
+    <div class="bg-[#FAF6F0] border-2 border-[#58111A] p-6">
+      <h2 class="font-serif text-2xl font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-3 text-center uppercase">Ready for Pickup</h2>
+      <div class="grid grid-cols-2 gap-4 mt-6 text-center">
+        <div class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] p-4 font-bold text-xl animate-pulse">#102</div>
+        <div class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] p-4 font-bold text-xl animate-pulse">#103</div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
