@@ -39,16 +39,18 @@
     
     <!-- 1. BILLING & POS SECTION -->
     <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4 overflow-hidden">
+      
+      <!-- Menu Area (Left Column) -->
       <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
         <div class="flex gap-2 mb-4 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30 shrink-0" id="categoryTabs">
-          <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap">All Items</button>
+          <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm">All Items</button>
         </div>
         <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start">
-          <p class="text-xs text-gray-500 col-span-2 text-center py-10">Connecting to Google Sheet Database...</p>
+          <p class="text-xs text-gray-500 col-span-2 text-center py-10 font-bold">Connecting to Google Sheet Database...</p>
         </div>
       </div>
 
-      <!-- Current Order Cart -->
+      <!-- Current Order Cart (Right Column) -->
       <div class="col-span-5 flex flex-col bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm">
         <h2 class="text-base font-bold text-[#58111A] uppercase border-b border-[#C5A059]/30 pb-2">Current Order</h2>
         <div class="my-3 flex items-center justify-between bg-[#FAF6F0] p-2 border border-[#C5A059]/30">
@@ -57,18 +59,18 @@
         </div>
 
         <div id="posCartList" class="flex-1 overflow-y-auto space-y-2 pr-1 border-b border-[#C5A059]/30 py-2">
-          <p class="text-xs text-center text-gray-400 py-10">No items added to order</p>
+          <p class="text-xs text-center text-gray-400 py-10 font-bold">No items added to order</p>
         </div>
 
         <div class="pt-3 space-y-2 shrink-0">
           <div class="flex justify-between items-center text-xs font-bold text-[#58111A] bg-[#FAF6F0] p-2 border border-[#C5A059]/20">
-            <span>Total Payable</span>
+            <span>Total Payable Amount</span>
             <span id="posTotalSum" class="text-base text-[#58111A]">₹0.00</span>
           </div>
 
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50">Clear Cart</button>
-            <button onclick="sendToKitchen()" id="btnSendKds" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] shadow-sm">Send To Kitchen KDS</button>
+            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50 transition-colors">Clear Cart</button>
+            <button onclick="sendToKitchen()" id="btnSendKds" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] transition-colors shadow-sm">Send To Kitchen KDS</button>
           </div>
         </div>
       </div>
@@ -80,13 +82,13 @@
         <h2 class="text-lg font-bold text-[#58111A] uppercase border-b border-[#C5A059]/40 pb-2">Business Day Closing & Rollover</h2>
         <div>
           <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Enter Next Working Date:</label>
-          <input type="date" id="nextActiveDate" class="w-full bg-[#FAF6F0] border border-[#C5A059] p-2 text-xs font-bold text-[#58111A]">
+          <input type="date" id="nextActiveDate" class="w-full bg-[#FAF6F0] border border-[#C5A059] p-2 text-xs font-bold text-[#58111A] outline-none">
         </div>
         <div>
           <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Closing Notes / Remarks:</label>
-          <input type="text" id="closingNotes" placeholder="Standard Shift Close" class="w-full bg-[#FAF6F0] border border-[#C5A059] p-2 text-xs text-[#58111A]">
+          <input type="text" id="closingNotes" placeholder="Standard Shift Close" class="w-full bg-[#FAF6F0] border border-[#C5A059] p-2 text-xs text-[#58111A] outline-none">
         </div>
-        <button onclick="confirmDayRollover()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase hover:bg-[#3D0B12]">
+        <button onclick="confirmDayRollover()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] transition-colors shadow-md">
           Close Current Day & Set New Date
         </button>
       </div>
@@ -95,10 +97,10 @@
   </main>
 
   <script>
-    let menuDatabase = [];
-    let posCart = [];
-    let currentPosCategory = "ALL";
-    let activeWorkingDate = "";
+    var menuDatabase = [];
+    var posCart = [];
+    var currentPosCategory = "ALL";
+    var activeWorkingDate = "";
 
     window.onload = function() {
       loadInitialSystemData();
@@ -107,6 +109,14 @@
     function loadInitialSystemData() {
       google.script.run
         .withSuccessHandler(function(data) {
+          if (!data || !data.menu || data.menu.length === 0) {
+            document.getElementById('posMenuList').innerHTML = 
+              '<div class="col-span-2 p-6 text-center bg-amber-50 border border-amber-300 text-[#58111A]">' +
+                '<p class="text-xs font-bold uppercase">Menu tab is empty or headers are mismatching.</p>' +
+                '<p class="text-[11px] text-gray-600 mt-1">Please ensure your Sheet tab is named exactly <b>Menu</b> with columns: ID, Category, Name, Price, Veg</p>' +
+              '</div>';
+            return;
+          }
           menuDatabase = data.menu;
           activeWorkingDate = data.currentDate;
           document.getElementById('activeDateBadge').innerText = activeWorkingDate;
@@ -114,109 +124,153 @@
           renderPosMenu();
         })
         .withFailureHandler(function(err) {
-          alert("Error fetching data: " + err.message);
+          document.getElementById('posMenuList').innerHTML = 
+            '<div class="col-span-2 p-6 text-center bg-red-50 border border-red-300 text-red-700">' +
+              '<p class="text-xs font-bold uppercase">Failed to load Google Sheet:</p>' +
+              '<p class="text-[11px] mt-1 font-semibold">' + err.message + '</p>' +
+            '</div>';
         })
         .getInitialData();
     }
 
     function buildCategoryTabs() {
-      const categories = ["ALL", ...new Set(menuDatabase.map(item => item.category))];
-      const container = document.getElementById('categoryTabs');
-      container.innerHTML = categories.map(cat => `
-        <button onclick="filterPosCat('${cat}')" id="pos-cat-${cat}" class="pos-cat-btn ${cat === 'ALL' ? 'bg-[#58111A] text-[#FDFBF7]' : 'bg-[#FDFBF7] text-[#58111A]'} border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap">${cat}</button>
-      `).join('');
+      var categories = ["ALL"];
+      for (var i = 0; i < menuDatabase.length; i++) {
+        if (menuDatabase[i].category && categories.indexOf(menuDatabase[i].category) === -1) {
+          categories.push(menuDatabase[i].category);
+        }
+      }
+
+      var container = document.getElementById('categoryTabs');
+      container.innerHTML = categories.map(function(cat) {
+        var activeClass = (cat === 'ALL') ? 'bg-[#58111A] text-[#FDFBF7]' : 'bg-[#FDFBF7] text-[#58111A]';
+        return '<button onclick="filterPosCat(\'' + cat + '\')" id="pos-cat-' + cat.replace(/[^a-zA-Z0-9]/g, '_') + '" class="pos-cat-btn ' + activeClass + ' border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-xs hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all">' + cat + '</button>';
+      }).join('');
     }
 
     function switchTab(tab) {
       document.getElementById('sec-billing').classList.toggle('hidden', tab !== 'billing');
       document.getElementById('sec-dayend').classList.toggle('hidden', tab !== 'dayend');
-      document.getElementById('tab-billing').className = tab === 'billing' ? "px-4 py-1.5 text-xs font-bold uppercase border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]" : "px-4 py-1.5 text-xs font-bold uppercase border border-[#C5A059]/40 text-[#58111A]";
-      document.getElementById('tab-dayend').className = tab === 'dayend' ? "px-4 py-1.5 text-xs font-bold uppercase border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]" : "px-4 py-1.5 text-xs font-bold uppercase border border-[#C5A059]/40 text-[#58111A]";
+      
+      document.getElementById('tab-billing').className = (tab === 'billing') 
+        ? "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]" 
+        : "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]";
+        
+      document.getElementById('tab-dayend').className = (tab === 'dayend') 
+        ? "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059] bg-[#58111A] text-[#FDFBF7]" 
+        : "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0]";
     }
 
     function filterPosCat(cat) {
       currentPosCategory = cat;
-      document.querySelectorAll('.pos-cat-btn').forEach(b => {
-        b.className = "pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap";
+      var buttons = document.querySelectorAll('.pos-cat-btn');
+      buttons.forEach(function(b) {
+        b.className = "pos-cat-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap hover:bg-[#58111A] hover:text-[#FDFBF7] transition-all";
       });
-      const activeBtn = document.getElementById(`pos-cat-${cat}`);
-      if(activeBtn) activeBtn.className = "pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm";
+      
+      var targetBtn = document.getElementById('pos-cat-' + cat.replace(/[^a-zA-Z0-9]/g, '_'));
+      if (targetBtn) {
+        targetBtn.className = "pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm transition-all";
+      }
       renderPosMenu();
     }
 
     function renderPosMenu() {
-      const container = document.getElementById('posMenuList');
-      const filtered = menuDatabase.filter(i => currentPosCategory === "ALL" || i.category === currentPosCategory);
+      var container = document.getElementById('posMenuList');
+      var filtered = menuDatabase.filter(function(i) {
+        return currentPosCategory === "ALL" || i.category === currentPosCategory;
+      });
 
-      container.innerHTML = filtered.map(item => {
-        const cartItem = posCart.find(c => c.id === item.id);
-        const qty = cartItem ? cartItem.qty : 0;
-        return `
-          <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-3 flex flex-col justify-between hover:border-[#58111A] transition-all shadow-sm rounded-sm">
-            <div>
-              <h4 class="font-bold text-xs text-[#58111A] leading-snug">${item.name}</h4>
-              <p class="text-[9px] text-[#C5A059] font-bold uppercase mt-1 tracking-wider">${item.category}</p>
-            </div>
-            <div class="flex justify-between items-center mt-3 pt-2 border-t border-[#C5A059]/20">
-              <p class="font-bold text-xs text-[#1A1A1A]">₹${item.price.toFixed(2)}</p>
-              ${qty > 0 ? `
-                <div class="flex items-center border border-[#C5A059] bg-[#FAF6F0]">
-                  <button onclick="changePosQty('${item.id}', -1)" class="w-6 h-6 font-bold text-[#58111A]">-</button>
-                  <span class="w-6 text-center font-bold text-xs text-[#58111A]">${qty}</span>
-                  <button onclick="changePosQty('${item.id}', 1)" class="w-6 h-6 font-bold text-[#58111A]">+</button>
-                </div>
-              ` : `
-                <button onclick="addPosItem('${item.id}')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase hover:bg-[#3D0B12]">
-                  + Add
-                </button>
-              `}
-            </div>
-          </div>
-        `;
+      if (filtered.length === 0) {
+        container.innerHTML = '<p class="text-xs text-center text-gray-400 col-span-2 py-10 font-bold">No items found in this category.</p>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(function(item) {
+        var cartItem = posCart.find(function(c) { return c.id === item.id; });
+        var qty = cartItem ? cartItem.qty : 0;
+        var dotColor = item.veg ? 'bg-green-600' : 'bg-red-600';
+
+        var actionMarkup = (qty > 0)
+          ? '<div class="flex items-center border border-[#C5A059] bg-[#FAF6F0]">' +
+              '<button onclick="changePosQty(\'' + item.id + '\', -1)" class="w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20">-</button>' +
+              '<span class="w-6 text-center font-bold text-xs text-[#58111A]">' + qty + '</span>' +
+              '<button onclick="changePosQty(\'' + item.id + '\', 1)" class="w-6 h-6 font-bold text-[#58111A] hover:bg-[#C5A059]/20">+</button>' +
+            '</div>'
+          : '<button onclick="addPosItem(\'' + item.id + '\')" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase hover:bg-[#3D0B12] transition-colors">' +
+              '+ Add' +
+            '</button>';
+
+        return '<div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-3 flex flex-col justify-between hover:border-[#58111A] transition-all shadow-sm rounded-sm">' +
+          '<div>' +
+            '<div class="flex items-center gap-1.5">' +
+              '<span class="inline-block w-2 h-2 rounded-full ' + dotColor + '"></span>' +
+              '<h4 class="font-bold text-xs text-[#58111A] leading-snug">' + item.name + '</h4>' +
+            '</div>' +
+            '<p class="text-[9px] text-[#C5A059] font-bold uppercase mt-1 tracking-wider">' + item.category + '</p>' +
+          '</div>' +
+          '<div class="flex justify-between items-center mt-3 pt-2 border-t border-[#C5A059]/20">' +
+            '<p class="font-bold text-xs text-[#1A1A1A]">₹' + item.price.toFixed(2) + '</p>' +
+            actionMarkup +
+          '</div>' +
+        '</div>';
       }).join('');
     }
 
     function addPosItem(id) {
-      const item = menuDatabase.find(i => i.id === id);
-      const exist = posCart.find(c => c.id === id);
-      if(exist) exist.qty++; else posCart.push({...item, qty: 1});
+      var item = menuDatabase.find(function(i) { return i.id === id; });
+      var exist = posCart.find(function(c) { return c.id === id; });
+      if (exist) {
+        exist.qty++;
+      } else {
+        posCart.push({
+          id: item.id,
+          category: item.category,
+          name: item.name,
+          price: item.price,
+          qty: 1
+        });
+      }
       renderPosMenu();
       renderPosCart();
     }
 
     function changePosQty(id, delta) {
-      const item = posCart.find(c => c.id === id);
-      if(!item) return;
+      var item = posCart.find(function(c) { return c.id === id; });
+      if (!item) return;
       item.qty += delta;
-      if(item.qty <= 0) posCart = posCart.filter(c => c.id !== id);
+      if (item.qty <= 0) {
+        posCart = posCart.filter(function(c) { return c.id !== id; });
+      }
       renderPosMenu();
       renderPosCart();
     }
 
     function renderPosCart() {
-      const container = document.getElementById('posCartList');
-      if(posCart.length === 0) {
-        container.innerHTML = `<p class="text-xs text-center text-gray-400 py-10">No items added to order</p>`;
-        document.getElementById('posTotalSum').innerText = `₹0.00`;
+      var container = document.getElementById('posCartList');
+      if (posCart.length === 0) {
+        container.innerHTML = '<p class="text-xs text-center text-gray-400 py-10 font-bold">No items added to order</p>';
+        document.getElementById('posTotalSum').innerText = '₹0.00';
         return;
       }
-      container.innerHTML = posCart.map(c => `
-        <div class="flex justify-between items-center bg-[#FAF6F0] p-2 border border-[#C5A059]/30 text-xs">
-          <div class="flex-1 pr-2">
-            <p class="font-bold text-[#58111A]">${c.name}</p>
-            <p class="text-[10px] text-gray-500">₹${c.price} × ${c.qty}</p>
-          </div>
-          <div class="flex items-center border border-[#C5A059] bg-[#FDFBF7] mr-2">
-            <button onclick="changePosQty('${c.id}', -1)" class="w-5 h-5 font-bold text-[#58111A]">-</button>
-            <span class="w-5 text-center font-bold text-[11px]">${c.qty}</span>
-            <button onclick="changePosQty('${c.id}', 1)" class="w-5 h-5 font-bold text-[#58111A]">+</button>
-          </div>
-          <span class="font-bold text-[#58111A]">₹${(c.price * c.qty).toFixed(2)}</span>
-        </div>
-      `).join('');
 
-      const total = posCart.reduce((s, c) => s + (c.price * c.qty), 0);
-      document.getElementById('posTotalSum').innerText = `₹${total.toFixed(2)}`;
+      container.innerHTML = posCart.map(function(c) {
+        return '<div class="flex justify-between items-center bg-[#FAF6F0] p-2 border border-[#C5A059]/30 text-xs">' +
+          '<div class="flex-1 pr-2">' +
+            '<p class="font-bold text-[#58111A]">' + c.name + '</p>' +
+            '<p class="text-[10px] text-gray-500">₹' + c.price + ' × ' + c.qty + '</p>' +
+          '</div>' +
+          '<div class="flex items-center border border-[#C5A059] bg-[#FDFBF7] mr-2">' +
+            '<button onclick="changePosQty(\'' + c.id + '\', -1)" class="w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20">-</button>' +
+            '<span class="w-5 text-center font-bold text-[11px]">' + c.qty + '</span>' +
+            '<button onclick="changePosQty(\'' + c.id + '\', 1)" class="w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20">+</button>' +
+          '</div>' +
+          '<span class="font-bold text-[#58111A]">₹' + (c.price * c.qty).toFixed(2) + '</span>' +
+        '</div>';
+      }).join('');
+
+      var total = posCart.reduce(function(sum, c) { return sum + (c.price * c.qty); }, 0);
+      document.getElementById('posTotalSum').innerText = '₹' + total.toFixed(2);
     }
 
     function clearPosCart() {
@@ -227,30 +281,37 @@
     }
 
     function sendToKitchen() {
-      const tbl = document.getElementById('posTableNo').value;
-      if(!tbl) { alert('Please specify a Table Number.'); return; }
-      if(posCart.length === 0) { alert('Cart is empty.'); return; }
+      var tbl = document.getElementById('posTableNo').value.trim();
+      if (!tbl) {
+        alert('Please enter a Table Number!');
+        return;
+      }
+      if (posCart.length === 0) {
+        alert('Cart is empty. Please add items to order.');
+        return;
+      }
 
-      const total = posCart.reduce((s, c) => s + (c.price * c.qty), 0);
-      const btn = document.getElementById('btnSendKds');
-      btn.innerText = "Syncing Sheet...";
+      var total = posCart.reduce(function(s, c) { return s + (c.price * c.qty); }, 0);
+      var btn = document.getElementById('btnSendKds');
+      btn.innerText = "Transmitting to Sheet...";
       btn.disabled = true;
 
-      const orderPayload = {
+      var orderPayload = {
         table: tbl,
         items: posCart,
-        total: total
+        total: total,
+        paymentMode: "POS Desk"
       };
 
       google.script.run
         .withSuccessHandler(function(res) {
-          alert(`Order ${res.orderId} dispatched to Sheet & Kitchen!`);
+          alert('Order #' + res.orderId + ' successfully sent to Kitchen for Table #' + tbl + '!');
           btn.innerText = "Send To Kitchen KDS";
           btn.disabled = false;
           clearPosCart();
         })
         .withFailureHandler(function(err) {
-          alert("Order failed: " + err.message);
+          alert("Order transmission failed: " + err.message);
           btn.innerText = "Send To Kitchen KDS";
           btn.disabled = false;
         })
@@ -258,15 +319,22 @@
     }
 
     function confirmDayRollover() {
-      const nextDate = document.getElementById('nextActiveDate').value;
-      const notes = document.getElementById('closingNotes').value;
-      if(!nextDate) { alert('Please select a date to rollover.'); return; }
+      var nextDate = document.getElementById('nextActiveDate').value;
+      var notes = document.getElementById('closingNotes').value;
+      
+      if (!nextDate) {
+        alert('Please select a date to rollover.');
+        return;
+      }
 
-      if(confirm(`Lock current ledger and rollover active POS date to: ${nextDate}?`)) {
+      if (confirm('Are you sure you want to close the current shift and set active working date to: ' + nextDate + '?')) {
         google.script.run
           .withSuccessHandler(function(res) {
-            alert(`Business date updated to ${res.activeDate}.`);
+            alert('Working date rolled over to: ' + res.activeDate);
             location.reload();
+          })
+          .withFailureHandler(function(err) {
+            alert('Rollover failed: ' + err.message);
           })
           .executeDayCloseAndSetNext(nextDate, notes);
       }
