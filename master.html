@@ -2,125 +2,420 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MONCHER - Executive Master Analytics</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Lato', sans-serif; background: #FDFBF7; color: #1A1A1A; }
+    body { font-family: 'Lato', sans-serif; background-color: #FDFBF7; color: #1A1A1A; }
     ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 4px; }
-    ::-webkit-scrollbar-track { background: #FAF6F0; }
+    ::-webkit-scrollbar-thumb { background-color: #C5A059; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background-color: #FAF6F0; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
+  <!-- 1. Authentication Modal -->
   <div id="loginOverlay" class="fixed inset-0 bg-[#58111A]/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="bg-[#FDFBF7] border-2 border-[#C5A059] w-full max-w-md p-8 shadow-2xl rounded-sm">
       <div class="text-center mb-6">
         <h1 class="text-3xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
         <p class="text-xs text-[#C5A059] uppercase tracking-widest font-bold mt-1">Executive Analytics Portal</p>
       </div>
+
       <form onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Username</label>
-          <input type="text" id="loginUser" required placeholder="ADMIN" class="w-full bg-[#FAF6F0] border border-[#C5A059]/60 px-3 py-2 text-sm font-bold text-[#58111A] outline-none">
+          <label class="block text-xs font-bold text-[#58111A] uppercase tracking-wider mb-1">Username</label>
+          <input type="text" id="loginUser" required placeholder="ADMIN" class="w-full bg-[#FAF6F0] border border-[#C5A059]/60 px-3 py-2 text-sm text-[#58111A] font-bold outline-none focus:border-[#58111A]">
         </div>
         <div>
-          <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Password</label>
-          <input type="password" id="loginPass" required placeholder="••••••••" class="w-full bg-[#FAF6F0] border border-[#C5A059]/60 px-3 py-2 text-sm font-bold text-[#58111A] outline-none">
+          <label class="block text-xs font-bold text-[#58111A] uppercase tracking-wider mb-1">Password</label>
+          <input type="password" id="loginPass" required placeholder="••••••••" class="w-full bg-[#FAF6F0] border border-[#C5A059]/60 px-3 py-2 text-sm text-[#58111A] font-bold outline-none focus:border-[#58111A]">
         </div>
-        <button type="submit" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-[#3D0B12]">
-          Authenticate & Access
+
+        <p id="loginError" class="text-xs text-red-600 font-bold hidden text-center">Invalid Username or Password!</p>
+
+        <button type="submit" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-[#3D0B12] transition-colors shadow-md cursor-pointer">
+          Authenticate &amp; Access
         </button>
       </form>
     </div>
   </div>
 
+  <!-- 2. Master Dashboard Content -->
   <div id="dashboardApp" class="hidden flex-1 flex flex-col">
-    <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-4 flex justify-between items-center shadow-sm">
+    
+    <!-- Top Header Bar -->
+    <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-4 flex justify-between items-center shadow-sm shrink-0">
       <div>
         <h1 class="text-2xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
-        <p class="text-[10px] text-[#C5A059] uppercase tracking-widest font-bold">Master Analytics & Performance Overview</p>
+        <p class="text-[10px] text-[#C5A059] uppercase tracking-widest font-bold">Executive Analytics &amp; Sheet Database Overview</p>
       </div>
+
       <div class="flex items-center gap-4">
         <span class="text-xs font-bold text-[#58111A] bg-[#FAF6F0] px-3 py-1 border border-[#C5A059]/40">User: ADMIN</span>
-        <button onclick="location.reload()" class="text-xs text-red-700 font-bold border border-red-700 px-3 py-1 hover:bg-red-50 uppercase tracking-wider">Logout</button>
+        <button onclick="logout()" class="text-xs text-red-700 font-bold border border-red-700 px-3 py-1 hover:bg-red-50 uppercase tracking-wider cursor-pointer">
+          Logout
+        </button>
       </div>
     </header>
 
+    <!-- Main Analytics Content -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm space-y-2">
-          <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Total Sales Revenue</p>
-          <h3 id="statRevenue" class="text-2xl font-bold text-[#58111A]">₹0.00</h3>
+
+      <!-- Time Filter Controls -->
+      <div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-4 shadow-sm flex flex-wrap justify-between items-center gap-4">
+        <div class="flex flex-wrap gap-2" id="filterBtnGroup">
+          <button onclick="setFilter('today')" id="btn-today" class="filter-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase tracking-wider cursor-pointer">Today</button>
+          <button onclick="setFilter('7days')" id="btn-7days" class="filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7] cursor-pointer">Last 7 Days</button>
+          <button onclick="setFilter('28days')" id="btn-28days" class="filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7] cursor-pointer">Last 28 Days</button>
+          <button onclick="setFilter('90days')" id="btn-90days" class="filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7] cursor-pointer">Last 90 Days</button>
+          <button onclick="setFilter('365days')" id="btn-365days" class="filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7] cursor-pointer">Last 365 Days</button>
         </div>
-        <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
-          <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Total Orders Served</p>
-          <h3 id="statOrders" class="text-2xl font-bold text-[#58111A]">0</h3>
-        </div>
-        <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
-          <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Avg. Order Value (AOV)</p>
-          <h3 id="statAov" class="text-2xl font-bold text-[#58111A]">₹0.00</h3>
+
+        <div class="flex items-center gap-2 border-l border-[#C5A059]/40 pl-4">
+          <span class="text-xs font-bold text-[#58111A] uppercase">Custom:</span>
+          <input type="date" id="dateStart" class="bg-[#FDFBF7] border border-[#C5A059]/60 px-2 py-1 text-xs text-[#58111A] font-bold outline-none">
+          <span class="text-xs font-bold text-[#58111A]">-</span>
+          <input type="date" id="dateEnd" class="bg-[#FDFBF7] border border-[#C5A059]/60 px-2 py-1 text-xs text-[#58111A] font-bold outline-none">
+          <button onclick="applyCustomDate()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-xs font-bold uppercase hover:bg-[#3D0B12] cursor-pointer">Apply</button>
         </div>
       </div>
 
+      <!-- KPI Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        <!-- Total Revenue -->
+        <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm space-y-2">
+          <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Total Sales Revenue</p>
+          <h3 id="statRevenue" class="text-2xl font-bold text-[#58111A]">₹0.00</h3>
+          <div class="flex items-center gap-1.5 text-xs font-bold" id="badgeGrowth">
+            <span class="text-gray-400">Loading live data...</span>
+          </div>
+        </div>
+
+        <!-- Total Orders -->
+        <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
+          <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Total Orders Served</p>
+          <h3 id="statOrders" class="text-2xl font-bold text-[#58111A]">0</h3>
+          <p class="text-[10px] text-gray-500 font-bold" id="statOrdersCompare">vs. previous period</p>
+        </div>
+
+        <!-- Average Order Value -->
+        <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
+          <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Avg. Order Value (AOV)</p>
+          <h3 id="statAov" class="text-2xl font-bold text-[#58111A]">₹0.00</h3>
+          <p class="text-[10px] text-gray-500 font-bold">Per Table Transaction</p>
+        </div>
+
+        <!-- Top Selling Category -->
+        <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
+          <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Top Revenue Category</p>
+          <h3 id="statTopCategory" class="text-xl font-bold text-[#58111A]">--</h3>
+          <p class="text-[10px] text-gray-500 font-bold" id="statTopCatPercent">0% of total sales</p>
+        </div>
+
+      </div>
+
+      <!-- Performance Insights Box -->
+      <div class="bg-[#FAF6F0] border-2 border-[#C5A059] p-5 shadow-sm space-y-3">
+        <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2">
+          <h3 class="text-lg font-bold text-[#58111A]">Executive Performance Insights</h3>
+          <span id="analysisPeriodLabel" class="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Period: Today</span>
+        </div>
+        <p id="analysisText" class="text-xs text-[#1A1A1A] leading-relaxed">
+          Aggregating ledger data from Google Sheets database...
+        </p>
+      </div>
+
+      <!-- Category Sales Breakdown Table -->
       <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-5 shadow-sm space-y-4">
-        <h3 class="text-base font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-2">Recent Shift Transactions</h3>
+        <h3 class="text-base font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-2">Category Sales Breakdown</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="bg-[#FAF6F0] border-b border-[#C5A059]/40 text-[#58111A] uppercase font-bold">
-                <th class="p-3">Order ID</th>
-                <th class="p-3">Date</th>
-                <th class="p-3">Table</th>
-                <th class="p-3">Amount</th>
-                <th class="p-3">Status</th>
+                <th class="p-3">Category</th>
+                <th class="p-3 text-center">Items Sold</th>
+                <th class="p-3 text-right">Revenue Generated</th>
+                <th class="p-3 text-right">% Contribution</th>
               </tr>
             </thead>
-            <tbody id="ordersTableBody" class="divide-y divide-[#C5A059]/20 font-bold"></tbody>
+            <tbody id="categoryTableBody" class="divide-y divide-[#C5A059]/20 font-bold">
+              <tr><td colspan="4" class="p-4 text-center text-gray-400 font-normal">Loading categories...</td></tr>
+            </tbody>
           </table>
         </div>
       </div>
+
+      <!-- Live Recent Orders Ledger -->
+      <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-5 shadow-sm space-y-4">
+        <h3 class="text-base font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-2">Recent Shift Transactions (Live Ledger)</h3>
+        <div class="overflow-x-auto max-h-72">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[#FAF6F0] border-b border-[#C5A059]/40 text-[#58111A] uppercase font-bold sticky top-0">
+                <th class="p-3">Order ID</th>
+                <th class="p-3">Date</th>
+                <th class="p-3">Table</th>
+                <th class="p-3">Items Summary</th>
+                <th class="p-3 text-right">Amount</th>
+                <th class="p-3 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody" class="divide-y divide-[#C5A059]/20 font-bold">
+              <tr><td colspan="6" class="p-4 text-center text-gray-400 font-normal">Loading recent orders...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </main>
   </div>
 
   <script>
+    var allOrders = [];
+    var activeFilter = "today";
+
     function handleLogin(e) {
       e.preventDefault();
-      var u = document.getElementById('loginUser').value.trim();
-      var p = document.getElementById('loginPass').value.trim();
-      if (u === "ADMIN" && p === "ADMIN") {
-        document.getElementById('loginOverlay').classList.add('hidden');
-        document.getElementById('dashboardApp').classList.remove('hidden');
-        loadAnalytics();
+      var user = document.getElementById("loginUser").value.trim();
+      var pass = document.getElementById("loginPass").value.trim();
+
+      if (user === "ADMIN" && pass === "ADMIN") {
+        document.getElementById("loginOverlay").classList.add("hidden");
+        document.getElementById("dashboardApp").classList.remove("hidden");
+        fetchLiveAnalyticsData();
       } else {
-        alert('Invalid credentials.');
+        document.getElementById("loginError").classList.remove("hidden");
       }
     }
 
-    function loadAnalytics() {
-      google.script.run
-        .withSuccessHandler(function(orders) {
-          var totalRev = orders.reduce(function(sum, o) { return sum + (o.total || 0); }, 0);
-          var totalCount = orders.length;
-          var aov = totalCount > 0 ? (totalRev / totalCount) : 0;
+    function logout() {
+      document.getElementById("loginOverlay").classList.remove("hidden");
+      document.getElementById("dashboardApp").classList.add("hidden");
+      document.getElementById("loginUser").value = "";
+      document.getElementById("loginPass").value = "";
+      document.getElementById("loginError").classList.add("hidden");
+    }
 
-          document.getElementById('statRevenue').innerText = '₹' + totalRev.toLocaleString('en-IN', {minimumFractionDigits: 2});
-          document.getElementById('statOrders').innerText = totalCount;
-          document.getElementById('statAov').innerText = '₹' + aov.toFixed(2);
+    function fetchLiveAnalyticsData() {
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(data) {
+            allOrders = data || [];
+            processDashboard(activeFilter);
+          })
+          .withFailureHandler(function(err) {
+            console.error("Analytics Sync Error:", err);
+          })
+          .getMasterAnalytics();
+      }
+    }
 
-          var tbody = document.getElementById('ordersTableBody');
-          tbody.innerHTML = orders.slice(-20).reverse().map(function(o) {
-            return '<tr>' +
-              '<td class="p-3 text-[#58111A]">' + o.id + '</td>' +
-              '<td class="p-3">' + o.date + '</td>' +
-              '<td class="p-3">#' + o.table + '</td>' +
-              '<td class="p-3">₹' + o.total.toFixed(2) + '</td>' +
-              '<td class="p-3"><span class="bg-[#58111A] text-white px-2 py-0.5 text-[10px]">' + o.status + '</span></td>' +
-            '</tr>';
-          }).join('');
-        })
-        .getMasterAnalytics();
+    function setFilter(type) {
+      activeFilter = type;
+      var buttons = document.querySelectorAll(".filter-btn");
+      buttons.forEach(function(btn) {
+        btn.className = "filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7] cursor-pointer";
+      });
+      var activeBtn = document.getElementById("btn-" + type);
+      if (activeBtn) {
+        activeBtn.className = "filter-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase tracking-wider cursor-pointer";
+      }
+      processDashboard(type);
+    }
+
+    function applyCustomDate() {
+      var s = document.getElementById("dateStart").value;
+      var e = document.getElementById("dateEnd").value;
+      if (!s || !e) {
+        alert("Please select both Start and End dates.");
+        return;
+      }
+      
+      var buttons = document.querySelectorAll(".filter-btn");
+      buttons.forEach(function(b) {
+        b.className = "filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider cursor-pointer";
+      });
+      processDashboard("custom", s, e);
+    }
+
+    function processDashboard(period, customStart, customEnd) {
+      var today = new Date();
+      var startDate, endDate, prevStartDate, prevEndDate, label;
+
+      if (period === "today") {
+        var todayStr = today.toISOString().split("T")[0];
+        startDate = new Date(todayStr);
+        endDate = new Date(todayStr);
+        endDate.setHours(23, 59, 59, 999);
+        
+        prevStartDate = new Date(startDate);
+        prevStartDate.setDate(prevStartDate.getDate() - 1);
+        prevEndDate = new Date(prevStartDate);
+        prevEndDate.setHours(23, 59, 59, 999);
+        label = "Today vs. Yesterday";
+      } else if (period === "7days") {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 7);
+        endDate = new Date(today);
+        prevStartDate = new Date(today);
+        prevStartDate.setDate(today.getDate() - 14);
+        prevEndDate = new Date(startDate);
+        label = "Last 7 Days vs. Previous 7 Days";
+      } else if (period === "28days") {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 28);
+        endDate = new Date(today);
+        prevStartDate = new Date(today);
+        prevStartDate.setDate(today.getDate() - 56);
+        prevEndDate = new Date(startDate);
+        label = "Last 28 Days vs. Previous 28 Days";
+      } else if (period === "90days") {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 90);
+        endDate = new Date(today);
+        prevStartDate = new Date(today);
+        prevStartDate.setDate(today.getDate() - 180);
+        prevEndDate = new Date(startDate);
+        label = "Last 90 Days vs. Previous 90 Days";
+      } else if (period === "365days") {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 365);
+        endDate = new Date(today);
+        prevStartDate = new Date(today);
+        prevStartDate.setDate(today.getDate() - 730);
+        prevEndDate = new Date(startDate);
+        label = "Last 365 Days vs. Prior Year";
+      } else {
+        startDate = new Date(customStart);
+        endDate = new Date(customEnd);
+        endDate.setHours(23, 59, 59, 999);
+        var diffDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) || 1;
+        prevStartDate = new Date(startDate);
+        prevStartDate.setDate(prevStartDate.getDate() - diffDays);
+        prevEndDate = new Date(startDate);
+        label = "Custom (" + diffDays + " Days) vs. Previous Period";
+      }
+
+      var currOrders = allOrders.filter(function(o) {
+        var d = new Date(o.date);
+        return d >= startDate && d <= endDate;
+      });
+
+      var prevOrders = allOrders.filter(function(o) {
+        var d = new Date(o.date);
+        return d >= prevStartDate && d <= prevEndDate;
+      });
+
+      var currRev = currOrders.reduce(function(sum, o) { return sum + (Number(o.total) || 0); }, 0);
+      var prevRev = prevOrders.reduce(function(sum, o) { return sum + (Number(o.total) || 0); }, 0);
+      var currCount = currOrders.length;
+      var prevCount = prevOrders.length;
+
+      var revDiff = currRev - prevRev;
+      var revGrowth = (prevRev > 0) ? ((revDiff / prevRev) * 100).toFixed(1) : (currRev > 0 ? "100.0" : "0.0");
+      var aov = (currCount > 0) ? (currRev / currCount) : 0;
+
+      document.getElementById("statRevenue").innerText = "₹" + currRev.toLocaleString("en-IN", { minimumFractionDigits: 2 });
+      document.getElementById("statOrders").innerText = currCount.toLocaleString("en-IN");
+      document.getElementById("statOrdersCompare").innerText = "Previous period: " + prevCount + " orders";
+      document.getElementById("statAov").innerText = "₹" + aov.toFixed(2);
+
+      var badge = document.getElementById("badgeGrowth");
+      if (revDiff >= 0) {
+        badge.className = "flex items-center gap-1.5 text-xs font-bold text-green-700";
+        badge.innerHTML = "<span>▲ +" + revGrowth + "%</span> <span class=\"text-gray-500 font-normal\">vs prev period</span>";
+      } else {
+        badge.className = "flex items-center gap-1.5 text-xs font-bold text-red-700";
+        badge.innerHTML = "<span>▼ " + revGrowth + "%</span> <span class=\"text-gray-500 font-normal\">vs prev period</span>";
+      }
+
+      document.getElementById("analysisPeriodLabel").innerText = label;
+      document.getElementById("analysisText").innerHTML =
+        "Total gross sales for <strong>" + label + "</strong> stand at <strong>₹" + currRev.toLocaleString("en-IN", { minimumFractionDigits: 2 }) + "</strong> generated over <strong>" + currCount + " completed orders</strong>. " +
+        "Performance indicates a <strong>" + (revDiff >= 0 ? "growth" : "decline") + " of " + Math.abs(parseFloat(revGrowth)) + "%</strong> compared to the preceding benchmark period (₹" + prevRev.toLocaleString("en-IN", { minimumFractionDigits: 2 }) + "). " +
+        "The Average Order Value (AOV) recorded is <strong>₹" + aov.toFixed(2) + "</strong> per table transaction.";
+
+      renderCategoryAnalytics(currOrders, currRev);
+      renderLedgerTable(currOrders.length > 0 ? currOrders : allOrders);
+    }
+
+    function renderCategoryAnalytics(orders, totalRev) {
+      var catMap = {};
+      var totalItemsSold = 0;
+
+      orders.forEach(function(o) {
+        (o.items || []).forEach(function(i) {
+          var cat = i.category || "General";
+          var qty = Number(i.qty || 1);
+          var price = Number(i.price || 0) * qty;
+
+          if (!catMap[cat]) {
+            catMap[cat] = { name: cat, items: 0, rev: 0 };
+          }
+          catMap[cat].items += qty;
+          catMap[cat].rev += price;
+          totalItemsSold += qty;
+        });
+      });
+
+      var catList = Object.keys(catMap).map(function(k) { return catMap[k]; });
+      catList.sort(function(a, b) { return b.rev - a.rev; });
+      
+      if (catList.length > 0) {
+        var topCat = catList[0];
+        var pct = (totalRev > 0) ? ((topCat.rev / totalRev) * 100).toFixed(0) : "0";
+        document.getElementById("statTopCategory").innerText = topCat.name;
+        document.getElementById("statTopCatPercent").innerText = pct + "% of total sales";
+      } else {
+        document.getElementById("statTopCategory").innerText = "--";
+        document.getElementById("statTopCatPercent").innerText = "0% of total sales";
+      }
+
+      var tbody = document.getElementById("categoryTableBody");
+      if (catList.length === 0) {
+        tbody.innerHTML = "<tr><td colspan=\"4\" class=\"p-4 text-center text-gray-400 font-normal\">No sales data recorded for this period</td></tr>";
+        return;
+      }
+
+      tbody.innerHTML = catList.map(function(c) {
+        var contribution = (totalRev > 0) ? ((c.rev / totalRev) * 100).toFixed(1) : "0.0";
+        return "<tr class=\"hover:bg-[#FAF6F0] transition-colors\">" +
+          "<td class=\"p-3 font-bold text-[#58111A]\">" + c.name + "</td>" +
+          "<td class=\"p-3 text-center text-gray-700\">" + c.items.toLocaleString() + "</td>" +
+          "<td class=\"p-3 text-right text-[#58111A]\">₹" + c.rev.toLocaleString("en-IN", { minimumFractionDigits: 2 }) + "</td>" +
+          "<td class=\"p-3 text-right text-[#C5A059]\">" + contribution + "%</td>" +
+        "</tr>";
+      }).join("");
+    }
+
+    function renderLedgerTable(orders) {
+      var tbody = document.getElementById("ordersTableBody");
+      var recent = orders.slice(-25).reverse();
+
+      if (recent.length === 0) {
+        tbody.innerHTML = "<tr><td colspan=\"6\" class=\"p-4 text-center text-gray-400 font-normal\">No shift records found</td></tr>";
+        return;
+      }
+
+      tbody.innerHTML = recent.map(function(o) {
+        var summary = (o.items || []).map(function(i) {
+          return i.name + " (x" + i.qty + ")";
+        }).join(", ");
+
+        return "<tr class=\"hover:bg-[#FAF6F0] transition-colors\">" +
+          "<td class=\"p-3 text-[#58111A]\">" + o.id + "</td>" +
+          "<td class=\"p-3 text-gray-600\">" + o.date + (o.time ? " • " + o.time : "") + "</td>" +
+          "<td class=\"p-3\">#" + o.table + "</td>" +
+          "<td class=\"p-3 text-gray-700 max-w-xs truncate\" title=\"" + summary + "\">" + (summary || "--") + "</td>" +
+          "<td class=\"p-3 text-right text-[#58111A]\">₹" + Number(o.total).toFixed(2) + "</td>" +
+          "<td class=\"p-3 text-center\">" +
+            "<span class=\"bg-[#58111A] text-[#FDFBF7] px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider\">" + o.status + "</span>" +
+          "</td>" +
+        "</tr>";
+      }).join("");
     }
   </script>
 </body>
