@@ -2,359 +2,122 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MONCHER - Executive Master Analytics</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Lato -->
-  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
-    body { 
-      font-family: 'Lato', sans-serif; 
-      background-color: #FDFBF7; 
-      color: #1A1A1A; 
-    }
-    .font-serif-times { 
-      font-family: 'Times New Roman', Times, serif; 
-    }
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 4px; }
-    ::-webkit-scrollbar-track { background: #FAF6F0; }
+    body { font-family: 'Lato', sans-serif; background: #FDFBF7; color: #1A1A1A; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- ==================== 1. LOGIN MODAL / SCREEN ==================== -->
   <div id="loginOverlay" class="fixed inset-0 bg-[#58111A]/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="bg-[#FDFBF7] border-2 border-[#C5A059] w-full max-w-md p-8 shadow-2xl">
       <div class="text-center mb-6">
-        <h1 class="font-serif-times text-3xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
+        <h1 class="text-3xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
         <p class="text-xs text-[#C5A059] uppercase tracking-widest font-bold mt-1">Executive Analytics Portal</p>
       </div>
-
       <form onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-[#58111A] uppercase tracking-wider mb-1">Username</label>
-          <input type="text" id="loginUser" required placeholder="ADMIN" class="w-full bg-[#FAF6F0] border border-[#C5A059]/60 px-3 py-2 text-sm text-[#58111A] font-bold outline-none focus:border-[#58111A]">
+          <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Username</label>
+          <input type="text" id="loginUser" required placeholder="ADMIN" class="w-full bg-[#FAF6F0] border border-[#C5A059]/60 px-3 py-2 text-sm font-bold text-[#58111A] outline-none">
         </div>
         <div>
-          <label class="block text-xs font-bold text-[#58111A] uppercase tracking-wider mb-1">Password</label>
-          <input type="password" id="loginPass" required placeholder="••••••••" class="w-full bg-[#FAF6F0] border border-[#C5A059]/60 px-3 py-2 text-sm text-[#58111A] font-bold outline-none focus:border-[#58111A]">
+          <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Password</label>
+          <input type="password" id="loginPass" required placeholder="••••••••" class="w-full bg-[#FAF6F0] border border-[#C5A059]/60 px-3 py-2 text-sm font-bold text-[#58111A] outline-none">
         </div>
-
-        <p id="loginError" class="text-xs text-red-600 font-bold hidden text-center">Invalid Username or Password!</p>
-
-        <button type="submit" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-[#3D0B12] transition-colors shadow-md">
+        <button type="submit" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-[#3D0B12]">
           Authenticate & Access
         </button>
       </form>
     </div>
   </div>
 
-
-  <!-- ==================== 2. MAIN DASHBOARD CONTENT ==================== -->
   <div id="dashboardApp" class="hidden flex-1 flex flex-col">
-    
-    <!-- Top Bar -->
     <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-4 flex justify-between items-center shadow-sm">
       <div>
-        <h1 class="font-serif-times text-2xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
+        <h1 class="text-2xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
         <p class="text-[10px] text-[#C5A059] uppercase tracking-widest font-bold">Master Analytics & Performance Overview</p>
       </div>
-
       <div class="flex items-center gap-4">
         <span class="text-xs font-bold text-[#58111A] bg-[#FAF6F0] px-3 py-1 border border-[#C5A059]/40">User: ADMIN</span>
-        <button onclick="logout()" class="text-xs text-red-700 font-bold border border-red-700 px-3 py-1 hover:bg-red-50 uppercase tracking-wider">
-          Logout
-        </button>
+        <button onclick="location.reload()" class="text-xs text-red-700 font-bold border border-red-700 px-3 py-1 hover:bg-red-50 uppercase tracking-wider">Logout</button>
       </div>
     </header>
 
-    <!-- Content Area -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-6">
-
-      <!-- Time Filter Controls -->
-      <div class="bg-[#FAF6F0] border border-[#C5A059]/40 p-4 shadow-sm flex flex-wrap justify-between items-center gap-4">
-        
-        <!-- Preset Range Buttons -->
-        <div class="flex flex-wrap gap-2" id="filterBtnGroup">
-          <button onclick="setFilter('today')" id="btn-today" class="filter-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase tracking-wider">Today</button>
-          <button onclick="setFilter('7days')" id="btn-7days" class="filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7]">Last 7 Days</button>
-          <button onclick="setFilter('28days')" id="btn-28days" class="filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7]">Last 28 Days</button>
-          <button onclick="setFilter('90days')" id="btn-90days" class="filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7]">Last 90 Days</button>
-          <button onclick="setFilter('365days')" id="btn-365days" class="filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7]">Last 365 Days</button>
-        </div>
-
-        <!-- Custom Date Picker -->
-        <div class="flex items-center gap-2 border-l border-[#C5A059]/40 pl-4">
-          <span class="text-xs font-bold text-[#58111A] uppercase">Custom:</span>
-          <input type="date" id="dateStart" class="bg-[#FDFBF7] border border-[#C5A059]/60 px-2 py-1 text-xs text-[#58111A] font-bold">
-          <span class="text-xs font-bold text-[#58111A]">-</span>
-          <input type="date" id="dateEnd" class="bg-[#FDFBF7] border border-[#C5A059]/60 px-2 py-1 text-xs text-[#58111A] font-bold">
-          <button onclick="applyCustomDate()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-xs font-bold uppercase hover:bg-[#3D0B12]">Apply</button>
-        </div>
-      </div>
-
-      <!-- KPI Summary Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        
-        <!-- Total Revenue Card -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm space-y-2">
           <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Total Sales Revenue</p>
-          <h3 id="statRevenue" class="font-serif-times text-2xl font-bold text-[#58111A]">₹0.00</h3>
-          <div class="flex items-center gap-1.5 text-xs font-bold" id="badgeGrowth">
-            <!-- Growth Badge Dynamic Inject -->
-          </div>
+          <h3 id="statRevenue" class="text-2xl font-bold text-[#58111A]">₹0.00</h3>
         </div>
-
-        <!-- Total Orders -->
         <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
           <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Total Orders Served</p>
-          <h3 id="statOrders" class="font-serif-times text-2xl font-bold text-[#58111A]">0</h3>
-          <p class="text-[10px] text-gray-500 font-bold" id="statOrdersCompare">vs. previous period</p>
+          <h3 id="statOrders" class="text-2xl font-bold text-[#58111A]">0</h3>
         </div>
-
-        <!-- Average Order Value (AOV) -->
         <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
           <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Avg. Order Value (AOV)</p>
-          <h3 id="statAov" class="font-serif-times text-2xl font-bold text-[#58111A]">₹0.00</h3>
-          <p class="text-[10px] text-gray-500 font-bold">Per Table Transaction</p>
+          <h3 id="statAov" class="text-2xl font-bold text-[#58111A]">₹0.00</h3>
         </div>
-
-        <!-- Top Selling Category -->
-        <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-4 shadow-sm space-y-2">
-          <p class="text-[11px] font-bold text-[#C5A059] uppercase tracking-wider">Top Revenue Category</p>
-          <h3 id="statTopCategory" class="font-serif-times text-xl font-bold text-[#58111A]">--</h3>
-          <p class="text-[10px] text-gray-500 font-bold" id="statTopCatPercent">0% of total sales</p>
-        </div>
-
       </div>
 
-      <!-- Comparative Performance Analysis Box -->
-      <div class="bg-[#FAF6F0] border-2 border-[#C5A059] p-5 shadow-sm space-y-3">
-        <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2">
-          <h3 class="font-serif-times text-lg font-bold text-[#58111A]">Sales Performance Insights</h3>
-          <span id="analysisPeriodLabel" class="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Selected Period: Today</span>
-        </div>
-        <p id="analysisText" class="text-xs text-[#1A1A1A] leading-relaxed font-normal">
-          Calculating comparative analytics data...
-        </p>
-      </div>
-
-      <!-- Category Breakdown Table -->
       <div class="bg-[#FDFBF7] border border-[#C5A059]/40 p-5 shadow-sm space-y-4">
-        <h3 class="font-serif-times text-base font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-2">
-          Category Sales Breakdown
-        </h3>
-
+        <h3 class="text-base font-bold text-[#58111A] border-b border-[#C5A059]/30 pb-2">Recent Shift Transactions</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="bg-[#FAF6F0] border-b border-[#C5A059]/40 text-[#58111A] uppercase font-bold">
-                <th class="p-3">Category</th>
-                <th class="p-3 text-center">Items Sold</th>
-                <th class="p-3 text-right">Revenue Generated</th>
-                <th class="p-3 text-right">% Contribution</th>
+                <th class="p-3">Order ID</th>
+                <th class="p-3">Date</th>
+                <th class="p-3">Table</th>
+                <th class="p-3">Amount</th>
+                <th class="p-3">Status</th>
               </tr>
             </thead>
-            <tbody id="categoryTableBody" class="divide-y divide-[#C5A059]/20 font-bold">
-              <!-- Dynamic Rows -->
-            </tbody>
+            <tbody id="ordersTableBody" class="divide-y divide-[#C5A059]/20 font-bold"></tbody>
           </table>
         </div>
       </div>
-
     </main>
   </div>
 
   <script>
-    // Demo Historical Sales Dataset generator for dynamic analytics
-    const salesData = [
-      { date: "2026-08-26", category: "Chef Special", items: 42, revenue: 22400 },
-      { date: "2026-08-26", category: "Tandoori & Grills", items: 50, revenue: 23500 },
-      { date: "2026-08-26", category: "Main Course", items: 65, revenue: 38000 },
-      { date: "2026-08-26", category: "Beverages", items: 80, revenue: 16000 },
-      
-      // Previous 7 days average daily: ~80,000 - 95,000
-      // Previous 28 days data points simulation...
-    ];
-
-    // Simulated benchmark data generators
-    function getSalesForRange(daysAgoStart, daysAgoEnd) {
-      // Mock Data Calculations based on standard ratios
-      let baseRevenue = 0;
-      let baseOrders = 0;
-      const days = (daysAgoEnd - daysAgoStart) || 1;
-
-      if(days === 1) {
-        baseRevenue = 99900;
-        baseOrders = 118;
-      } else if(days === 7) {
-        baseRevenue = 645000;
-        baseOrders = 780;
-      } else if(days === 28) {
-        baseRevenue = 2480000;
-        baseOrders = 3100;
-      } else if(days === 90) {
-        baseRevenue = 7820000;
-        baseOrders = 9400;
-      } else if(days === 365) {
-        baseRevenue = 31200000;
-        baseOrders = 38000;
-      } else {
-        baseRevenue = days * 85000;
-        baseOrders = days * 105;
-      }
-
-      return { revenue: baseRevenue, orders: baseOrders };
-    }
-
-    let activeFilter = 'today';
-
-    // Authentication Logic
     function handleLogin(e) {
       e.preventDefault();
-      const user = document.getElementById('loginUser').value;
-      const pass = document.getElementById('loginPass').value;
-
-      if(user === "ADMIN" && pass === "ADMIN") {
+      const u = document.getElementById('loginUser').value;
+      const p = document.getElementById('loginPass').value;
+      if (u === "ADMIN" && p === "ADMIN") {
         document.getElementById('loginOverlay').classList.add('hidden');
         document.getElementById('dashboardApp').classList.remove('hidden');
-        updateDashboard('today');
+        loadAnalytics();
       } else {
-        document.getElementById('loginError').classList.remove('hidden');
+        alert('Invalid credentials.');
       }
     }
 
-    function logout() {
-      document.getElementById('loginOverlay').classList.remove('hidden');
-      document.getElementById('dashboardApp').classList.add('hidden');
-      document.getElementById('loginUser').value = '';
-      document.getElementById('loginPass').value = '';
-      document.getElementById('loginError').classList.add('hidden');
-    }
+    function loadAnalytics() {
+      google.script.run
+        .withSuccessHandler(function(orders) {
+          const totalRev = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+          const totalCount = orders.length;
+          const aov = totalCount > 0 ? (totalRev / totalCount) : 0;
 
-    // Filter Navigation
-    function setFilter(filterType) {
-      activeFilter = filterType;
-      
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.className = "filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-[#58111A] hover:text-[#FDFBF7]";
-      });
+          document.getElementById('statRevenue').innerText = `₹${totalRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+          document.getElementById('statOrders').innerText = totalCount;
+          document.getElementById('statAov').innerText = `₹${aov.toFixed(2)}`;
 
-      const activeBtn = document.getElementById(`btn-${filterType}`);
-      if(activeBtn) {
-        activeBtn.className = "filter-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase tracking-wider";
-      }
-
-      updateDashboard(filterType);
-    }
-
-    function applyCustomDate() {
-      const start = document.getElementById('dateStart').value;
-      const end = document.getElementById('dateEnd').value;
-      
-      if(!start || !end) {
-        alert("Please select both Start Date and End Date!");
-        return;
-      }
-
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.className = "filter-btn bg-[#FDFBF7] text-[#58111A] border border-[#C5A059]/40 px-4 py-1.5 text-xs font-bold uppercase tracking-wider";
-      });
-
-      updateDashboard('custom', start, end);
-    }
-
-    // Main Engine function to render analytics & metrics
-    function updateDashboard(period, customStart = null, customEnd = null) {
-      let currentPeriodData, prevPeriodData, periodTitle;
-
-      if(period === 'today') {
-        currentPeriodData = getSalesForRange(0, 1);
-        prevPeriodData = { revenue: 91000, orders: 106 }; // Yesterday comparison
-        periodTitle = "Today vs. Yesterday";
-      } else if(period === '7days') {
-        currentPeriodData = getSalesForRange(0, 7);
-        prevPeriodData = getSalesForRange(7, 14); // Previous 7 days
-        periodTitle = "Last 7 Days vs. Previous 7 Days";
-      } else if(period === '28days') {
-        currentPeriodData = getSalesForRange(0, 28);
-        prevPeriodData = getSalesForRange(28, 56);
-        periodTitle = "Last 28 Days vs. Previous 28 Days";
-      } else if(period === '90days') {
-        currentPeriodData = getSalesForRange(0, 90);
-        prevPeriodData = getSalesForRange(90, 180);
-        periodTitle = "Last 90 Days vs. Previous 90 Days";
-      } else if(period === '365days') {
-        currentPeriodData = getSalesForRange(0, 365);
-        prevPeriodData = getSalesForRange(365, 730);
-        periodTitle = "Last 365 Days vs. Previous Year";
-      } else {
-        const d1 = new Date(customStart);
-        const d2 = new Date(customEnd);
-        const diffDays = Math.ceil(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24)) || 1;
-        currentPeriodData = getSalesForRange(0, diffDays);
-        prevPeriodData = getSalesForRange(diffDays, diffDays * 2);
-        periodTitle = `Custom (${diffDays} Days) vs. Previous Period`;
-      }
-
-      // Calculations
-      const revDiff = currentPeriodData.revenue - prevPeriodData.revenue;
-      const revGrowth = ((revDiff / prevPeriodData.revenue) * 100).toFixed(1);
-      const isPositive = revDiff >= 0;
-      const aov = currentPeriodData.revenue / currentPeriodData.orders;
-
-      // Update KPIs
-      document.getElementById('statRevenue').innerText = `₹${currentPeriodData.revenue.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
-      document.getElementById('statOrders').innerText = currentPeriodData.orders.toLocaleString('en-IN');
-      document.getElementById('statOrdersCompare').innerText = `Previous period: ${prevPeriodData.orders} orders`;
-      document.getElementById('statAov').innerText = `₹${aov.toFixed(2)}`;
-      document.getElementById('statTopCategory').innerText = "Main Course";
-      document.getElementById('statTopCatPercent').innerText = "38% of total revenue";
-
-      // Growth Badge
-      const badgeContainer = document.getElementById('badgeGrowth');
-      if(isPositive) {
-        badgeContainer.className = "flex items-center gap-1.5 text-xs font-bold text-green-700";
-        badgeContainer.innerHTML = `<span>▲ +${revGrowth}%</span> <span class="text-gray-500 font-normal">vs previous period</span>`;
-      } else {
-        badgeContainer.className = "flex items-center gap-1.5 text-xs font-bold text-red-700";
-        badgeContainer.innerHTML = `<span>▼ ${revGrowth}%</span> <span class="text-gray-500 font-normal">vs previous period</span>`;
-      }
-
-      // Analytics Summary text
-      document.getElementById('analysisPeriodLabel').innerText = periodTitle;
-      document.getElementById('analysisText').innerHTML = `
-        Your sales for <strong>${periodTitle}</strong> stand at <strong>₹${currentPeriodData.revenue.toLocaleString('en-IN')}</strong> across <strong>${currentPeriodData.orders} orders</strong>.
-        This represents a <strong>${isPositive ? 'growth' : 'decline'} of ${Math.abs(revGrowth)}%</strong> compared to the preceding benchmark period (₹${prevPeriodData.revenue.toLocaleString('en-IN')}).
-        Average Order Value (AOV) recorded at <strong>₹${aov.toFixed(2)}</strong> per table.
-      `;
-
-      // Render Category Table Data
-      renderCategoryTable(currentPeriodData.revenue);
-    }
-
-    function renderCategoryTable(totalRev) {
-      const categories = [
-        { name: "Main Course", pct: 0.38, items: Math.floor(totalRev * 0.0004) },
-        { name: "Tandoori & Grills", pct: 0.26, items: Math.floor(totalRev * 0.0003) },
-        { name: "Chef Special", pct: 0.22, items: Math.floor(totalRev * 0.0002) },
-        { name: "Beverages", pct: 0.14, items: Math.floor(totalRev * 0.0005) }
-      ];
-
-      const tbody = document.getElementById('categoryTableBody');
-      tbody.innerHTML = categories.map(cat => {
-        const catRev = totalRev * cat.pct;
-        return `
-          <tr class="hover:bg-[#FAF6F0] transition-colors">
-            <td class="p-3 font-bold text-[#58111A]">${cat.name}</td>
-            <td class="p-3 text-center text-gray-700">${cat.items.toLocaleString()}</td>
-            <td class="p-3 text-right text-[#58111A]">₹${catRev.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
-            <td class="p-3 text-right text-[#C5A059]">${(cat.pct * 100).toFixed(0)}%</td>
-          </tr>
-        `;
-      }).join('');
+          const tbody = document.getElementById('ordersTableBody');
+          tbody.innerHTML = orders.slice(-15).reverse().map(o => `
+            <tr>
+              <td class="p-3 text-[#58111A]">${o.id}</td>
+              <td class="p-3">${o.date}</td>
+              <td class="p-3">#${o.table}</td>
+              <td class="p-3">₹${o.total.toFixed(2)}</td>
+              <td class="p-3"><span class="bg-[#58111A] text-white px-2 py-0.5 text-[10px]">${o.status}</span></td>
+            </tr>
+          `).join('');
+        })
+        .getMasterAnalytics();
     }
   </script>
 </body>
