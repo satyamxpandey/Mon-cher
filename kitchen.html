@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Cher - Kitchen Display</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #000; color: #fff; padding: 20px; }
+        .order-card { background: #1E1E1E; border: 2px solid #D4AF37; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .btn-status { background: #4CAF50; border: none; color: white; padding: 10px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1 style="color:#D4AF37;">Kitchen Orders Feed</h1>
+    <div id="ordersContainer">Loading active orders...</div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
+
+        async function fetchOrders() {
+            const res = await fetch(`${API_URL}?action=getActiveOrders`);
+            const json = await res.json();
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '';
+            json.data.forEach(order => {
+                if (order.Order_Status !== "Served") {
+                    container.innerHTML += `
+                        <div class="order-card">
+                            <h3>Order ID: ${order.Order_ID} (${order.Table_No})</h3>
+                            <p>Status: <strong>${order.Order_Status}</strong></p>
+                            <button class="btn-status" onclick="updateStatus('${order.Order_ID}', 'Preparing')">Mark Preparing</button>
+                            <button class="btn-status" onclick="updateStatus('${order.Order_ID}', 'Ready')">Mark Ready</button>
+                        </div>`;
+                }
+            });
+        }
+
+        async function updateStatus(orderId, status) {
+            await fetch(API_URL, {
+                method: "POST", mode: "no-cors",
+                body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: status })
+            });
+            fetchOrders();
+        }
+        setInterval(fetchOrders, 5000); // Auto refresh every 5s
+        fetchOrders();
+    </script>
+</body>
+</html>
