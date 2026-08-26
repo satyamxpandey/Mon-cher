@@ -106,10 +106,35 @@
     var activeCategory = "ALL";
     var customerTable = null;
 
-    window.addEventListener("DOMContentLoaded", function() {
-      detectTableFromUrl();
-      fetchMenuFromAPI();
-    });
+    // Direct JSONP Callback registered before execution
+    window.handleMoncherData = function(res) {
+      var container = document.getElementById("customerMenuList");
+      if (!res || !res.menu || res.menu.length === 0) {
+        if (container) {
+          container.innerHTML = "<p class='text-xs text-red-600 text-center py-10 font-bold'>Menu is currently unavailable in database.</p>";
+        }
+        return;
+      }
+      menuData = res.menu;
+      renderCategoryPills();
+      renderCustomerMenu();
+    };
+
+    function fetchMenuFromAPI() {
+      var oldScript = document.getElementById("cust-jsonp-script");
+      if (oldScript) oldScript.remove();
+
+      var script = document.createElement("script");
+      script.id = "cust-jsonp-script";
+      script.src = API_URL + "?action=getInitialData&callback=handleMoncherData&_t=" + Date.now();
+      script.onerror = function() {
+        var container = document.getElementById("customerMenuList");
+        if (container) {
+          container.innerHTML = "<div class='p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to connect to menu API.</div>";
+        }
+      };
+      document.head.appendChild(script);
+    }
 
     function detectTableFromUrl() {
       var params = new URLSearchParams(window.location.search);
@@ -131,25 +156,6 @@
       document.getElementById("tableModal").classList.add("hidden");
     }
 
-    window.handleCustomerMenuData = function(res) {
-      if (!res || !res.menu || res.menu.length === 0) {
-        document.getElementById("customerMenuList").innerHTML = "<p class='text-xs text-red-600 text-center py-10 font-bold'>Menu is currently unavailable.</p>";
-        return;
-      }
-      menuData = res.menu;
-      renderCategoryPills();
-      renderCustomerMenu();
-    };
-
-    function fetchMenuFromAPI() {
-      var script = document.createElement("script");
-      script.src = API_URL + "?action=getInitialData&callback=handleCustomerMenuData&_t=" + Date.now();
-      script.onerror = function() {
-        document.getElementById("customerMenuList").innerHTML = "<div class='p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to connect to menu API.</div>";
-      };
-      document.head.appendChild(script);
-    }
-
     function renderCategoryPills() {
       var cats = ["ALL"];
       for (var i = 0; i < menuData.length; i++) {
@@ -159,6 +165,8 @@
       }
 
       var container = document.getElementById("categoryTabs");
+      if (!container) return;
+
       container.innerHTML = cats.map(function(c) {
         var activeClass = (c === activeCategory) ? "bg-[#58111A] text-[#FDFBF7]" : "bg-[#FDFBF7] text-[#58111A]";
         return "<button onclick=\"filterCategory('" + c + "')\" id=\"cat-btn-" + c.replace(/[^a-zA-Z0-9]/g, "_") + "\" class=\"cat-btn " + activeClass + " border border-[#C5A059]/40 px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap cursor-pointer\">" + c + "</button>";
@@ -178,9 +186,16 @@
 
     function renderCustomerMenu() {
       var container = document.getElementById("customerMenuList");
+      if (!container) return;
+
       var filtered = menuData.filter(function(i) {
         return activeCategory === "ALL" || i.category === activeCategory;
       });
+
+      if (filtered.length === 0) {
+        container.innerHTML = "<p class='text-xs text-center text-gray-400 py-10 font-bold'>No items in this category.</p>";
+        return;
+      }
 
       container.innerHTML = filtered.map(function(item) {
         var cartItem = custCart.find(function(c) { return c.id === item.id; });
@@ -331,6 +346,11 @@
       renderCustomerMenu();
       document.getElementById("successModal").classList.add("hidden");
     }
+
+    window.addEventListener("DOMContentLoaded", function() {
+      detectTableFromUrl();
+      fetchMenuFromAPI();
+    });
   </script>
 </body>
 </html>
