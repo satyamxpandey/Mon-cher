@@ -7,6 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Lato', sans-serif; background: #FDFBF7; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background: #FAF6F0; }
   </style>
 </head>
 <body class="h-screen p-8 flex flex-col justify-between overflow-hidden">
@@ -29,25 +32,47 @@
   </div>
 
   <script>
+    var lastTvHash = "";
+
+    try {
+      var liveChannel = new BroadcastChannel('moncher_order_stream');
+      liveChannel.onmessage = function(event) {
+        if (event.data === 'NEW_ORDER_SYNC' || event.data === 'STATUS_CHANGE') {
+          syncTvData();
+        }
+      };
+    } catch(e){}
+
     function syncTvData() {
       google.script.run
         .withSuccessHandler(function(data) {
-          const prepContainer = document.getElementById('tvPreparingList');
-          const readyContainer = document.getElementById('tvReadyList');
+          var prep = (data && data.preparing) ? data.preparing : [];
+          var ready = (data && data.ready) ? data.ready : [];
+          var currentHash = JSON.stringify(prep) + JSON.stringify(ready);
 
-          prepContainer.innerHTML = (data.preparing.length > 0)
-            ? data.preparing.map(o => `<div class="bg-[#FDFBF7] border border-[#C5A059]/30 p-4 font-bold text-2xl text-[#1A1A1A]">#${o.table} <span class="text-xs block text-gray-500">${o.id}</span></div>`).join('')
-            : `<p class="text-xs text-gray-400 col-span-2 py-8">No tickets preparing</p>`;
+          if (currentHash === lastTvHash) return;
+          lastTvHash = currentHash;
 
-          readyContainer.innerHTML = (data.ready.length > 0)
-            ? data.ready.map(o => `<div class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] p-4 font-bold text-2xl animate-pulse">#${o.table} <span class="text-xs block text-[#C5A059]">${o.id}</span></div>`).join('')
-            : `<p class="text-xs text-gray-400 col-span-2 py-8">No orders ready</p>`;
+          var prepContainer = document.getElementById('tvPreparingList');
+          var readyContainer = document.getElementById('tvReadyList');
+
+          prepContainer.innerHTML = (prep.length > 0)
+            ? prep.map(function(o) {
+                return '<div class="bg-[#FDFBF7] border border-[#C5A059]/30 p-4 font-bold text-2xl text-[#1A1A1A]">#' + o.table + ' <span class="text-xs block text-gray-500 font-bold">' + o.id + '</span></div>';
+              }).join('')
+            : '<p class="text-xs text-gray-400 col-span-2 py-8 font-bold">No tickets preparing</p>';
+
+          readyContainer.innerHTML = (ready.length > 0)
+            ? ready.map(function(o) {
+                return '<div class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] p-4 font-bold text-2xl animate-pulse">#' + o.table + ' <span class="text-xs block text-[#C5A059] font-bold">' + o.id + '</span></div>';
+              }).join('')
+            : '<p class="text-xs text-gray-400 col-span-2 py-8 font-bold">No orders ready</p>';
         })
         .getActiveKitchenOrders();
     }
 
     syncTvData();
-    setInterval(syncTvData, 4000);
+    setInterval(syncTvData, 2000);
   </script>
 </body>
 </html>
