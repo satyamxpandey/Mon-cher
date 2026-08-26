@@ -2,33 +2,69 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mon Cher - Kitchen Display</title>
+    <title>Kitchen Display System (KDS)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: #000; color: #fff; padding: 20px; }
-        .order-card { background: #1E1E1E; border: 2px solid #D4AF37; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .btn-status { background: #4CAF50; border: none; color: white; padding: 10px; font-weight: bold; cursor: pointer; }
+        :root {
+            --bg: #0A0A0C; --surface: #141417; --border: #24242A;
+            --primary: #D4AF37; --blue: #3B82F6; --green: #22C55E; --orange: #F97316;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: #FFF; padding: 24px; }
+
+        .kds-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+        .ticket { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+        .ticket.Preparing { border-color: var(--orange); }
+        .ticket.Ready { border-color: var(--green); }
+
+        .ticket-header { padding: 14px; background: rgba(255,255,255,0.03); display: flex; justify-content: space-between; font-weight: 700; border-bottom: 1px solid var(--border); }
+        .ticket-body { padding: 16px; flex: 1; font-size: 0.95rem; }
+        .ticket-actions { padding: 12px; display: flex; gap: 8px; border-top: 1px solid var(--border); }
+
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
+        .btn-prep { background: var(--orange); color: #FFF; }
+        .btn-ready { background: var(--green); color: #FFF; }
     </style>
 </head>
 <body>
-    <h1 style="color:#D4AF37;">Kitchen Orders Feed</h1>
-    <div id="ordersContainer">Loading active orders...</div>
+
+    <div class="kds-header">
+        <h1 style="color:var(--primary);">KITCHEN DISPLAY (KDS)</h1>
+        <div id="liveTimer" style="color: gray;">Live Auto-Sync Active</div>
+    </div>
+
+    <div class="grid" id="kdsContainer">Loading tickets...</div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
 
-        async function fetchOrders() {
+        async function fetchKDS() {
             const res = await fetch(`${API_URL}?action=getActiveOrders`);
             const json = await res.json();
-            const container = document.getElementById('ordersContainer');
+            const container = document.getElementById('kdsContainer');
             container.innerHTML = '';
+
             json.data.forEach(order => {
                 if (order.Order_Status !== "Served") {
+                    let itemsHtml = "";
+                    try {
+                        const parsed = JSON.parse(order.Items);
+                        itemsHtml = parsed.map(i => `<div>• ${i.name}</div>`).join('');
+                    } catch(e) { itemsHtml = order.Items; }
+
                     container.innerHTML += `
-                        <div class="order-card">
-                            <h3>Order ID: ${order.Order_ID} (${order.Table_No})</h3>
-                            <p>Status: <strong>${order.Order_Status}</strong></p>
-                            <button class="btn-status" onclick="updateStatus('${order.Order_ID}', 'Preparing')">Mark Preparing</button>
-                            <button class="btn-status" onclick="updateStatus('${order.Order_ID}', 'Ready')">Mark Ready</button>
+                        <div class="ticket ${order.Order_Status}">
+                            <div class="ticket-header">
+                                <span>#${order.Order_ID}</span>
+                                <span style="color:var(--primary)">${order.Table_No}</span>
+                            </div>
+                            <div class="ticket-body">${itemsHtml}</div>
+                            <div class="ticket-actions">
+                                <button class="btn btn-prep" onclick="updateStatus('${order.Order_ID}', 'Preparing')">Preparing</button>
+                                <button class="btn btn-ready" onclick="updateStatus('${order.Order_ID}', 'Ready')">Ready</button>
+                            </div>
                         </div>`;
                 }
             });
@@ -39,10 +75,10 @@
                 method: "POST", mode: "no-cors",
                 body: JSON.stringify({ action: "updateStatus", orderId: orderId, status: status })
             });
-            fetchOrders();
+            fetchKDS();
         }
-        setInterval(fetchOrders, 5000); // Auto refresh every 5s
-        fetchOrders();
+        setInterval(fetchKDS, 5000);
+        fetchKDS();
     </script>
 </body>
 </html>
