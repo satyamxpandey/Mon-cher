@@ -59,11 +59,34 @@
     <!-- BILLING SECTION -->
     <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4 overflow-hidden">
       
-      <!-- Menu Grid (Left) -->
+      <!-- Menu Grid & Fast Search (Left) -->
       <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
-        <div class="flex gap-2 mb-4 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30 shrink-0" id="categoryTabs">
+        
+        <!-- Live Instant Search Bar -->
+        <div class="mb-3 shrink-0">
+          <div class="relative flex items-center">
+            <input 
+              type="text" 
+              id="menuSearchInput" 
+              oninput="handleMenuSearch(this.value)" 
+              placeholder="🔍 Search items by Name or Code (e.g. Tikka, Paneer, MO01)..." 
+              class="w-full bg-[#FDFBF7] border-2 border-[#C5A059] px-3 py-2 pr-8 text-xs font-bold text-[#58111A] placeholder-gray-400 outline-none focus:border-[#58111A] shadow-xs"
+            >
+            <button 
+              onclick="clearMenuSearch()" 
+              id="btnClearSearch" 
+              class="hidden absolute right-2.5 text-xs font-bold text-gray-400 hover:text-[#58111A] cursor-pointer" 
+              title="Clear search"
+            >✕</button>
+          </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="flex gap-2 mb-3 overflow-x-auto pb-2 border-b-2 border-[#C5A059]/30 shrink-0" id="categoryTabs">
           <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm cursor-pointer">All Items</button>
         </div>
+
+        <!-- Items Feed -->
         <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start">
           <p class="text-xs text-gray-500 col-span-2 text-center py-10 font-bold">Connecting to Ofbuzz Cloud API...</p>
         </div>
@@ -120,7 +143,7 @@
 
   </main>
 
-  <!-- Thermal Print Container (Auto-Triggered on Print) -->
+  <!-- Thermal Print Container -->
   <div id="printableReceipt" class="hidden">
     <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 6px;">
       <h2 style="font-size: 16px; margin: 0; font-weight: bold;">MONCHER</h2>
@@ -170,6 +193,7 @@
     var menuDatabase = [];
     var posCart = [];
     var currentPosCategory = "ALL";
+    var currentSearchQuery = "";
     var activeWorkingDate = "";
 
     window.handleInitialData = function(data) {
@@ -239,14 +263,44 @@
       renderPosMenu();
     }
 
+    // Real-time Search Handler
+    function handleMenuSearch(query) {
+      currentSearchQuery = query.trim().toLowerCase();
+      var btnClear = document.getElementById("btnClearSearch");
+      if (currentSearchQuery.length > 0) {
+        btnClear.classList.remove("hidden");
+      } else {
+        btnClear.classList.add("hidden");
+      }
+      renderPosMenu();
+    }
+
+    function clearMenuSearch() {
+      document.getElementById("menuSearchInput").value = "";
+      currentSearchQuery = "";
+      document.getElementById("btnClearSearch").classList.add("hidden");
+      renderPosMenu();
+    }
+
     function renderPosMenu() {
       var container = document.getElementById("posMenuList");
+      
       var filtered = menuDatabase.filter(function(i) {
-        return currentPosCategory === "ALL" || i.category === currentPosCategory;
+        var matchCat = (currentPosCategory === "ALL" || i.category === currentPosCategory);
+        var matchSearch = true;
+        
+        if (currentSearchQuery.length > 0) {
+          var nameMatch = i.name.toLowerCase().indexOf(currentSearchQuery) !== -1;
+          var idMatch = i.id.toLowerCase().indexOf(currentSearchQuery) !== -1;
+          var catMatch = i.category.toLowerCase().indexOf(currentSearchQuery) !== -1;
+          matchSearch = (nameMatch || idMatch || catMatch);
+        }
+        
+        return matchCat && matchSearch;
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = "<p class='text-xs text-center text-gray-400 col-span-2 py-10 font-bold'>No items found in this category.</p>";
+        container.innerHTML = "<p class='text-xs text-center text-gray-400 col-span-2 py-10 font-bold'>No items match your search.</p>";
         return;
       }
 
@@ -271,7 +325,10 @@
               "<span class='inline-block w-2 h-2 rounded-full " + dotColor + "'></span>" +
               "<h4 class='font-bold text-xs text-[#58111A] leading-snug'>" + item.name + "</h4>" +
             "</div>" +
-            "<p class='text-[9px] text-[#C5A059] font-bold uppercase mt-1 tracking-wider'>" + item.category + "</p>" +
+            "<div class='flex justify-between items-center mt-1'>" +
+              "<span class='text-[9px] text-[#C5A059] font-bold uppercase tracking-wider'>" + item.category + "</span>" +
+              "<span class='text-[9px] text-gray-400 font-mono font-bold'>" + item.id + "</span>" +
+            "</div>" +
           "</div>" +
           "<div class='flex justify-between items-center mt-3 pt-2 border-t border-[#C5A059]/20'>" +
             "<p class='font-bold text-xs text-[#1A1A1A]'>₹" + item.price.toFixed(2) + "</p>" +
