@@ -59,18 +59,20 @@
     <!-- BILLING SECTION -->
     <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4 overflow-hidden">
       
-      <!-- Menu Grid & Fast Search (Left) -->
+      <!-- Menu Grid & Code Search (Left) -->
       <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
         
-        <!-- Live Instant Search Bar -->
+        <!-- Live Item Code & Name Search Bar -->
         <div class="mb-3 shrink-0">
           <div class="relative flex items-center">
+            <span class="absolute left-3 text-xs text-[#C5A059] font-bold font-mono">CODE/NAME:</span>
             <input 
               type="text" 
               id="menuSearchInput" 
               oninput="handleMenuSearch(this.value)" 
-              placeholder="🔍 Search items by Name or Code (e.g. Tikka, Paneer, MO01)..." 
-              class="w-full bg-[#FDFBF7] border-2 border-[#C5A059] px-3 py-2 pr-8 text-xs font-bold text-[#58111A] placeholder-gray-400 outline-none focus:border-[#58111A] shadow-xs"
+              onkeydown="handleSearchKeydown(event)"
+              placeholder="Type Item Code (e.g. MO01, MO12) or Name..." 
+              class="w-full bg-[#FDFBF7] border-2 border-[#C5A059] pl-24 pr-8 py-2 text-xs font-bold text-[#58111A] placeholder-gray-400 outline-none focus:border-[#58111A] shadow-xs uppercase"
             >
             <button 
               onclick="clearMenuSearch()" 
@@ -79,6 +81,7 @@
               title="Clear search"
             >✕</button>
           </div>
+          <p class="text-[9px] text-gray-500 mt-1 font-semibold">Tip: Exact item code type karke <kbd class="bg-gray-200 px-1 py-0.5 rounded text-[8px] font-mono">ENTER</kbd> dabane se item sidha cart me add ho jayega.</p>
         </div>
 
         <!-- Category Tabs -->
@@ -263,9 +266,9 @@
       renderPosMenu();
     }
 
-    // Real-time Search Handler
+    // Real-time Item Code / Name Search Handler
     function handleMenuSearch(query) {
-      currentSearchQuery = query.trim().toLowerCase();
+      currentSearchQuery = query.trim().toUpperCase();
       var btnClear = document.getElementById("btnClearSearch");
       if (currentSearchQuery.length > 0) {
         btnClear.classList.remove("hidden");
@@ -273,6 +276,20 @@
         btnClear.classList.add("hidden");
       }
       renderPosMenu();
+    }
+
+    // Quick-Add to Cart on Enter key
+    function handleSearchKeydown(e) {
+      if (e.key === "Enter" && currentSearchQuery.length > 0) {
+        var exactMatch = menuDatabase.find(function(item) {
+          return String(item.id).toUpperCase() === currentSearchQuery;
+        });
+
+        if (exactMatch) {
+          addPosItem(exactMatch.id);
+          clearMenuSearch();
+        }
+      }
     }
 
     function clearMenuSearch() {
@@ -290,17 +307,23 @@
         var matchSearch = true;
         
         if (currentSearchQuery.length > 0) {
-          var nameMatch = i.name.toLowerCase().indexOf(currentSearchQuery) !== -1;
-          var idMatch = i.id.toLowerCase().indexOf(currentSearchQuery) !== -1;
-          var catMatch = i.category.toLowerCase().indexOf(currentSearchQuery) !== -1;
-          matchSearch = (nameMatch || idMatch || catMatch);
+          var idStr = String(i.id).toUpperCase();
+          var nameStr = String(i.name).toUpperCase();
+          var catStr = String(i.category).toUpperCase();
+
+          // Code match (starts with or includes) OR Name match OR Category match
+          var idMatch = idStr.indexOf(currentSearchQuery) !== -1;
+          var nameMatch = nameStr.indexOf(currentSearchQuery) !== -1;
+          var catMatch = catStr.indexOf(currentSearchQuery) !== -1;
+
+          matchSearch = (idMatch || nameMatch || catMatch);
         }
         
         return matchCat && matchSearch;
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = "<p class='text-xs text-center text-gray-400 col-span-2 py-10 font-bold'>No items match your search.</p>";
+        container.innerHTML = "<p class='text-xs text-center text-gray-400 col-span-2 py-10 font-bold'>No items match code or name: \"" + currentSearchQuery + "\"</p>";
         return;
       }
 
@@ -321,13 +344,15 @@
 
         return "<div class='bg-[#FDFBF7] border border-[#C5A059]/40 p-3 flex flex-col justify-between hover:border-[#58111A] transition-all shadow-sm rounded-sm'>" +
           "<div>" +
-            "<div class='flex items-center gap-1.5'>" +
-              "<span class='inline-block w-2 h-2 rounded-full " + dotColor + "'></span>" +
-              "<h4 class='font-bold text-xs text-[#58111A] leading-snug'>" + item.name + "</h4>" +
+            "<div class='flex items-center justify-between gap-1.5'>" +
+              "<div class='flex items-center gap-1.5'>" +
+                "<span class='inline-block w-2 h-2 rounded-full " + dotColor + "'></span>" +
+                "<h4 class='font-bold text-xs text-[#58111A] leading-snug'>" + item.name + "</h4>" +
+              "</div>" +
+              "<span class='text-[10px] bg-[#58111A]/10 text-[#58111A] px-1.5 py-0.5 rounded font-mono font-black border border-[#C5A059]/40'>" + item.id + "</span>" +
             "</div>" +
             "<div class='flex justify-between items-center mt-1'>" +
               "<span class='text-[9px] text-[#C5A059] font-bold uppercase tracking-wider'>" + item.category + "</span>" +
-              "<span class='text-[9px] text-gray-400 font-mono font-bold'>" + item.id + "</span>" +
             "</div>" +
           "</div>" +
           "<div class='flex justify-between items-center mt-3 pt-2 border-t border-[#C5A059]/20'>" +
@@ -372,8 +397,11 @@
       container.innerHTML = posCart.map(function(c) {
         return "<div class='flex justify-between items-center bg-[#FAF6F0] p-2 border border-[#C5A059]/30 text-xs'>" +
           "<div class='flex-1 pr-2'>" +
-            "<p class='font-bold text-[#58111A]'>" + c.name + "</p>" +
-            "<p class='text-[10px] text-gray-500'>₹" + c.price + " × " + c.qty + "</p>" +
+            "<div class='flex items-center gap-1.5'>" +
+              "<span class='text-[9px] bg-[#58111A]/10 text-[#58111A] px-1 py-0.2 rounded font-mono font-bold'>" + c.id + "</span>" +
+              "<p class='font-bold text-[#58111A]'>" + c.name + "</p>" +
+            "</div>" +
+            "<p class='text-[10px] text-gray-500 mt-0.5'>₹" + c.price + " × " + c.qty + "</p>" +
           "</div>" +
           "<div class='flex items-center border border-[#C5A059] bg-[#FDFBF7] mr-2'>" +
             "<button onclick=\"changePosQty('" + c.id + "', -1)\" class='w-5 h-5 font-bold text-[#58111A] hover:bg-[#C5A059]/20 cursor-pointer'>-</button>" +
@@ -451,7 +479,7 @@
       var tbody = document.getElementById("prnItemsBody");
       tbody.innerHTML = items.map(function(i) {
         return "<tr>" +
-          "<td style='padding: 2px 0;'>" + i.name + "</td>" +
+          "<td style='padding: 2px 0;'>" + i.name + " (" + i.id + ")</td>" +
           "<td style='text-align: center; padding: 2px 0;'>" + i.qty + "</td>" +
           "<td style='text-align: right; padding: 2px 0;'>₹" + i.price + "</td>" +
           "<td style='text-align: right; padding: 2px 0;'>₹" + (i.price * i.qty).toFixed(2) + "</td>" +
