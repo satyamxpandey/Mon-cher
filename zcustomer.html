@@ -1,11 +1,113 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MONCHER - Digital Table Menu • Ofbuzz Technology</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Lato', sans-serif; background-color: #FDFBF7; color: #1A1A1A; }
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar-thumb { background-color: #C5A059; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background-color: #FAF6F0; }
+  </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden select-none">
+
+  <!-- Table Lock Modal -->
+  <div id="tableModal" class="fixed inset-0 bg-[#58111A]/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-[#FDFBF7] border-2 border-[#C5A059] w-full max-w-xs p-6 shadow-2xl rounded-sm text-center">
+      <h2 class="text-xl font-bold text-[#58111A] tracking-widest uppercase mb-1">Welcome</h2>
+      <p class="text-[10px] text-[#C5A059] font-bold uppercase tracking-wider mb-4">MONCHER Fine Dining</p>
+      
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-[#58111A] uppercase mb-1">Enter Your Table No.</label>
+        <input type="number" id="custTableInput" placeholder="e.g. 05" class="w-full bg-[#FAF6F0] border border-[#C5A059] text-center py-2 text-lg font-bold text-[#58111A] outline-none">
+      </div>
+
+      <button onclick="confirmTableNumber()" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] cursor-pointer">
+        Start Ordering
+      </button>
+      
+      <p class="text-[9px] text-gray-400 mt-4 font-bold uppercase tracking-wider">Powered by Ofbuzz Technology</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-4 py-3 flex justify-between items-center shrink-0 shadow-sm">
+    <div>
+      <h1 class="text-lg font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
+      <p class="text-[8px] text-[#C5A059] uppercase tracking-widest font-bold">Self-Order Menu • Ofbuzz Engine</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] text-gray-500 font-bold uppercase">Table:</span>
+      <span id="displayTableNum" class="text-xs font-bold text-[#58111A] bg-[#FAF6F0] px-2 py-0.5 border border-[#C5A059]/40 rounded-sm">--</span>
+    </div>
+  </header>
+
+  <!-- Category Pills Navigation -->
+  <div class="bg-[#FAF6F0] border-b border-[#C5A059]/30 px-3 py-2 flex gap-2 overflow-x-auto shrink-0" id="categoryTabs">
+    <button onclick="filterCategory('ALL')" class="cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-3 py-1 text-[11px] font-bold uppercase whitespace-nowrap cursor-pointer">All</button>
+  </div>
+
+  <!-- Menu Item Feed -->
+  <main id="customerMenuList" class="flex-1 overflow-y-auto p-3 space-y-3">
+    <p class="text-xs text-center text-gray-400 py-12 font-bold">Connecting to Moncher Live API...</p>
+  </main>
+
+  <!-- Floating Sticky Cart Bar -->
+  <div id="bottomCartBar" class="bg-[#FAF6F0] border-t-2 border-[#C5A059] p-3 shrink-0 flex items-center justify-between shadow-lg">
+    <div>
+      <p class="text-[10px] text-gray-500 font-bold uppercase"><span id="cartCount">0</span> Items in Cart</p>
+      <p id="cartTotal" class="text-sm font-bold text-[#58111A]">₹0.00</p>
+    </div>
+    <button onclick="openCartDrawer()" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-5 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] shadow-sm cursor-pointer">
+      View Cart / Order
+    </button>
+  </div>
+
+  <!-- Cart / Checkout Drawer -->
+  <div id="cartDrawer" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 hidden flex flex-col justify-end">
+    <div class="bg-[#FDFBF7] border-t-2 border-[#C5A059] p-4 max-h-[80vh] flex flex-col shadow-2xl rounded-t-lg">
+      <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2 mb-3">
+        <h2 class="text-sm font-bold text-[#58111A] uppercase">Your Order Summary</h2>
+        <button onclick="closeCartDrawer()" class="text-xs font-bold text-gray-500 hover:text-[#58111A] cursor-pointer">✕ Close</button>
+      </div>
+
+      <div id="drawerCartList" class="flex-1 overflow-y-auto space-y-2 py-1 max-h-56"></div>
+
+      <div class="border-t border-[#C5A059]/30 pt-3 mt-3 space-y-2">
+        <div class="flex justify-between items-center text-xs font-bold text-[#58111A]">
+          <span>Total Bill</span>
+          <span id="drawerTotalSum" class="text-base">₹0.00</span>
+        </div>
+
+        <button onclick="placeCustomerOrder()" id="btnPlaceOrder" class="w-full bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-[#3D0B12] shadow-md cursor-pointer">
+          Confirm &amp; Send To Kitchen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Success Screen -->
+  <div id="successModal" class="fixed inset-0 bg-[#58111A] z-50 hidden flex flex-col items-center justify-center p-6 text-center text-[#FDFBF7]">
+    <div class="w-12 h-12 rounded-full border-2 border-[#C5A059] flex items-center justify-center text-xl font-bold mb-3">✓</div>
+    <h2 class="text-xl font-bold tracking-wider uppercase mb-1">Order Received!</h2>
+    <p class="text-xs text-[#C5A059] font-bold uppercase mb-4" id="successOrderId">Order #ORD-XXXX</p>
+    <p class="text-xs text-gray-200 max-w-xs mb-6">Your order has been sent directly to the kitchen. You can track your table number on the status screen.</p>
+    <button onclick="resetCustomerSession()" class="bg-[#FDFBF7] text-[#58111A] border border-[#C5A059] px-6 py-2 text-xs font-bold uppercase tracking-wider cursor-pointer">
+      Order More Items
+    </button>
+  </div>
+
+  <script>
     var API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
     var menuData = [];
     var custCart = [];
     var activeCategory = "ALL";
     var customerTable = null;
 
-    // 1. Define JSONP Callbacks
     window.handleCustomerData = function(res) {
       var container = document.getElementById("customerMenuList");
       if (!res || !res.menu || res.menu.length === 0) {
@@ -19,9 +121,6 @@
       renderCustomerMenu();
     };
 
-    window.handleMoncherData = window.handleCustomerData;
-
-    // 2. Load API via Dynamic Script Injection
     function fetchMenuFromAPI() {
       var oldScript = document.getElementById("cust-jsonp-script");
       if (oldScript) oldScript.remove();
@@ -32,7 +131,7 @@
       script.onerror = function() {
         var container = document.getElementById("customerMenuList");
         if (container) {
-          container.innerHTML = "<div class='p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to connect to menu API. Please ensure Apps Script deployment is set to 'Anyone'.</div>";
+          container.innerHTML = "<div class='p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to connect to menu API.</div>";
         }
       };
       document.head.appendChild(script);
@@ -254,3 +353,5 @@
       fetchMenuFromAPI();
     });
   </script>
+</body>
+</html>
