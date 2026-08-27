@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MONCHER - Restaurant Management System</title>
+  <title>MONCHER - Powered by Ofbuzz Technology</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
@@ -11,6 +11,22 @@
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background-color: #C5A059; border-radius: 4px; }
     ::-webkit-scrollbar-track { background-color: #FAF6F0; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #printableReceipt, #printableReceipt * { visibility: visible; }
+      #printableReceipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm;
+        margin: 0 auto;
+        padding: 10px;
+        background: #FFF;
+        color: #000;
+        font-family: monospace;
+      }
+    }
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
@@ -18,8 +34,11 @@
   <!-- Header -->
   <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-3 flex justify-between items-center shadow-sm shrink-0">
     <div>
-      <h1 class="text-xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
-      <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-semibold">Fine Dining &amp; Lounge</p>
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl font-bold text-[#58111A] tracking-widest uppercase">MONCHER</h1>
+        <span class="text-[9px] bg-[#58111A] text-[#FDFBF7] px-1.5 py-0.5 font-bold uppercase rounded-xs">POS 2.0</span>
+      </div>
+      <p class="text-[9px] text-[#C5A059] uppercase tracking-widest font-bold">Fine Dining &amp; Lounge • Powered by Ofbuzz Technology</p>
     </div>
     
     <div class="flex items-center gap-4">
@@ -34,25 +53,29 @@
     </div>
   </header>
 
-  <!-- Main View Container -->
+  <!-- Main View -->
   <main class="flex-1 overflow-hidden">
     
-    <!-- 1. BILLING & POS SECTION -->
+    <!-- BILLING SECTION -->
     <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4 overflow-hidden">
       
-      <!-- Menu Selection Area -->
+      <!-- Menu Grid (Left) -->
       <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
         <div class="flex gap-2 mb-4 overflow-x-auto pb-3 border-b-2 border-[#C5A059]/30 shrink-0" id="categoryTabs">
           <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm cursor-pointer">All Items</button>
         </div>
         <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start">
-          <p class="text-xs text-gray-500 col-span-2 text-center py-10 font-bold">Connecting to Moncher Live API...</p>
+          <p class="text-xs text-gray-500 col-span-2 text-center py-10 font-bold">Connecting to Ofbuzz Cloud API...</p>
         </div>
       </div>
 
-      <!-- Current Order Cart -->
+      <!-- Current Order & Checkout (Right) -->
       <div class="col-span-5 flex flex-col bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm">
-        <h2 class="text-base font-bold text-[#58111A] uppercase border-b border-[#C5A059]/30 pb-2">Current Order</h2>
+        <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2">
+          <h2 class="text-base font-bold text-[#58111A] uppercase">Current Order</h2>
+          <span class="text-[10px] text-gray-400 font-bold uppercase">Ofbuzz Engine</span>
+        </div>
+
         <div class="my-3 flex items-center justify-between bg-[#FAF6F0] p-2 border border-[#C5A059]/30">
           <label class="text-xs font-bold text-[#58111A] uppercase">Table Number:</label>
           <input type="number" id="posTableNo" placeholder="e.g. 05" class="w-24 border border-[#C5A059] px-2 py-1 text-xs font-bold bg-[#FDFBF7] text-[#58111A] outline-none text-center">
@@ -68,15 +91,16 @@
             <span id="posTotalSum" class="text-base text-[#58111A]">₹0.00</span>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50 transition-colors cursor-pointer">Clear Cart</button>
-            <button onclick="sendToKitchen()" id="btnSendKds" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] transition-colors shadow-sm cursor-pointer">Send To Kitchen KDS</button>
+          <div class="grid grid-cols-3 gap-2 pt-1">
+            <button onclick="clearPosCart()" class="border border-[#58111A] text-[#58111A] py-2 text-xs font-bold uppercase hover:bg-red-50 transition-colors cursor-pointer">Clear</button>
+            <button onclick="sendToKitchen(false)" id="btnSendKds" class="bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] py-2 text-xs font-bold uppercase hover:bg-[#3D0B12] transition-colors shadow-sm cursor-pointer">Send KDS</button>
+            <button onclick="sendToKitchen(true)" id="btnPrintBill" class="bg-green-700 text-[#FDFBF7] border border-green-800 py-2 text-xs font-bold uppercase hover:bg-green-800 transition-colors shadow-sm cursor-pointer">KDS + Print</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 2. DAY MANAGEMENT SECTION -->
+    <!-- DAY MANAGEMENT -->
     <section id="sec-dayend" class="h-full p-8 hidden bg-[#FAF6F0] flex items-center justify-center">
       <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-6 max-w-md w-full shadow-lg space-y-4">
         <h2 class="text-lg font-bold text-[#58111A] uppercase border-b border-[#C5A059]/40 pb-2">Business Day Closing &amp; Rollover</h2>
@@ -96,6 +120,50 @@
 
   </main>
 
+  <!-- Thermal Print Container (Auto-Triggered on Print) -->
+  <div id="printableReceipt" class="hidden">
+    <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 6px;">
+      <h2 style="font-size: 16px; margin: 0; font-weight: bold;">MONCHER</h2>
+      <p style="font-size: 10px; margin: 2px 0;">Fine Dining &amp; Lounge</p>
+      <p style="font-size: 9px; margin: 0;">POS System by Ofbuzz Technology</p>
+    </div>
+    
+    <div style="font-size: 10px; margin-bottom: 6px; border-bottom: 1px dashed #000; padding-bottom: 4px;">
+      <div style="display: flex; justify-content: space-between;">
+        <span>Order: <b id="prnOrderId">ORD-XXXX</b></span>
+        <span>Table: <b id="prnTable">#00</b></span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span id="prnDate">Date: 2026-08-27</span>
+        <span id="prnTime">Time: 12:00 PM</span>
+      </div>
+    </div>
+
+    <table style="width: 100%; font-size: 10px; border-collapse: collapse; margin-bottom: 6px;">
+      <thead>
+        <tr style="border-bottom: 1px solid #000;">
+          <th style="text-align: left; padding: 2px 0;">Item</th>
+          <th style="text-align: center; padding: 2px 0;">Qty</th>
+          <th style="text-align: right; padding: 2px 0;">Price</th>
+          <th style="text-align: right; padding: 2px 0;">Total</th>
+        </tr>
+      </thead>
+      <tbody id="prnItemsBody"></tbody>
+    </table>
+
+    <div style="border-top: 1px dashed #000; padding-top: 4px; font-size: 11px;">
+      <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 13px;">
+        <span>GRAND TOTAL:</span>
+        <span id="prnTotal">₹0.00</span>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 10px; border-top: 1px dashed #000; padding-top: 6px; font-size: 9px;">
+      <p style="margin: 0;">Thank you for dining with us!</p>
+      <p style="margin: 2px 0; font-weight: bold;">Software by Ofbuzz Technology</p>
+    </div>
+  </div>
+
   <script>
     var API_URL = "https://script.google.com/macros/s/AKfycbxkwNfmiY6-zlj2cVmet56-o2S4O-n9skVIuBGVN-wZxXAl2NQwlI_7Cbu4Nej45Ig8/exec";
 
@@ -104,27 +172,29 @@
     var currentPosCategory = "ALL";
     var activeWorkingDate = "";
 
-    window.addEventListener("DOMContentLoaded", function() {
-      fetchMenuFromAPI();
-    });
+    window.handleInitialData = function(data) {
+      if (!data || !data.menu || data.menu.length === 0) {
+        document.getElementById("posMenuList").innerHTML = "<p class='text-xs text-red-600 col-span-2 text-center py-10 font-bold'>Menu is empty in Google Sheet database.</p>";
+        return;
+      }
+      menuDatabase = data.menu;
+      activeWorkingDate = data.currentDate;
+      document.getElementById("activeDateBadge").innerText = activeWorkingDate;
+      buildCategoryTabs();
+      renderPosMenu();
+    };
 
     function fetchMenuFromAPI() {
-      fetch(API_URL + "?action=getInitialData")
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-          if (!data || !data.menu || data.menu.length === 0) {
-            document.getElementById("posMenuList").innerHTML = "<p class='text-xs text-red-600 col-span-2 text-center py-10 font-bold'>Menu is empty in Google Sheet.</p>";
-            return;
-          }
-          menuDatabase = data.menu;
-          activeWorkingDate = data.currentDate;
-          document.getElementById("activeDateBadge").innerText = activeWorkingDate;
-          buildCategoryTabs();
-          renderPosMenu();
-        })
-        .catch(function(err) {
-          document.getElementById("posMenuList").innerHTML = "<div class='col-span-2 p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to connect to backend: " + err.message + "</div>";
-        });
+      var oldScript = document.getElementById("pos-jsonp-script");
+      if (oldScript) oldScript.remove();
+
+      var script = document.createElement("script");
+      script.id = "pos-jsonp-script";
+      script.src = API_URL + "?action=getInitialData&callback=handleInitialData&_t=" + Date.now();
+      script.onerror = function() {
+        document.getElementById("posMenuList").innerHTML = "<div class='col-span-2 p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to load data from Ofbuzz Engine.</div>";
+      };
+      document.head.appendChild(script);
     }
 
     function buildCategoryTabs() {
@@ -268,35 +338,73 @@
       renderPosCart();
     }
 
-    function sendToKitchen() {
+    function sendToKitchen(shouldPrint) {
       var tbl = document.getElementById("posTableNo").value.trim();
       if (!tbl) { alert("Please enter a Table Number!"); return; }
       if (posCart.length === 0) { alert("Cart is empty."); return; }
 
       var total = posCart.reduce(function(s, c) { return s + (c.price * c.qty); }, 0);
-      var btn = document.getElementById("btnSendKds");
-      btn.innerText = "Transmitting to Sheet...";
-      btn.disabled = true;
+      var btnKds = document.getElementById("btnSendKds");
+      var btnPrint = document.getElementById("btnPrintBill");
+      btnKds.disabled = true;
+      btnPrint.disabled = true;
+
+      var currentSnapshotCart = JSON.parse(JSON.stringify(posCart));
 
       fetch(API_URL, {
         method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "submitOrder",
-          data: { table: tbl, items: posCart, total: total, paymentMode: "POS Desk" }
+          data: { table: tbl, items: currentSnapshotCart, total: total, paymentMode: "POS Desk" }
         })
       })
-      .then(function(r) { return r.json(); })
-      .then(function(res) {
-        alert("Order #" + res.orderId + " sent to Kitchen!");
-        btn.innerText = "Send To Kitchen KDS";
-        btn.disabled = false;
+      .then(function() {
+        try {
+          if (typeof BroadcastChannel !== "undefined") {
+            var channel = new BroadcastChannel("moncher_order_stream");
+            channel.postMessage("NEW_ORDER_SYNC");
+          }
+        } catch(e){}
+
+        if (shouldPrint) {
+          executeReceiptPrint(tbl, currentSnapshotCart, total);
+        } else {
+          alert("Order sent to Kitchen for Table #" + tbl + "!");
+        }
+
+        btnKds.disabled = false;
+        btnPrint.disabled = false;
         clearPosCart();
       })
       .catch(function(err) {
-        alert("Order transmission failed: " + err.message);
-        btn.innerText = "Send To Kitchen KDS";
-        btn.disabled = false;
+        alert("Transmission error: " + err.message);
+        btnKds.disabled = false;
+        btnPrint.disabled = false;
       });
+    }
+
+    function executeReceiptPrint(tableNo, items, total) {
+      document.getElementById("prnOrderId").innerText = "ORD-" + Math.floor(1000 + Math.random() * 9000);
+      document.getElementById("prnTable").innerText = "#" + tableNo;
+      document.getElementById("prnDate").innerText = "Date: " + (activeWorkingDate || new Date().toISOString().split('T')[0]);
+      document.getElementById("prnTime").innerText = "Time: " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+      var tbody = document.getElementById("prnItemsBody");
+      tbody.innerHTML = items.map(function(i) {
+        return "<tr>" +
+          "<td style='padding: 2px 0;'>" + i.name + "</td>" +
+          "<td style='text-align: center; padding: 2px 0;'>" + i.qty + "</td>" +
+          "<td style='text-align: right; padding: 2px 0;'>₹" + i.price + "</td>" +
+          "<td style='text-align: right; padding: 2px 0;'>₹" + (i.price * i.qty).toFixed(2) + "</td>" +
+        "</tr>";
+      }).join("");
+
+      document.getElementById("prnTotal").innerText = "₹" + total.toFixed(2);
+
+      // Trigger native browser print modal
+      window.print();
     }
 
     function confirmDayRollover() {
@@ -307,15 +415,20 @@
       if (confirm("Close shift and set working date to " + nextDate + "?")) {
         fetch(API_URL, {
           method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "dayClose", nextDate: nextDate, notes: notes })
         })
-        .then(function(r) { return r.json(); })
-        .then(function(res) {
-          alert("Working date set to " + res.activeDate);
+        .then(function() {
+          alert("Working date set to " + nextDate);
           location.reload();
         });
       }
     }
+
+    window.addEventListener("DOMContentLoaded", function() {
+      fetchMenuFromAPI();
+    });
   </script>
 </body>
 </html>
