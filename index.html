@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MONCHER - Powered by Ofbuzz Technology</title>
+  <title>MONCHER - POS &amp; Billing System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
@@ -31,7 +31,7 @@
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
 
-  <!-- Header -->
+  <!-- Header Bar -->
   <header class="bg-[#FDFBF7] border-b-2 border-[#C5A059]/40 px-6 py-3 flex justify-between items-center shadow-sm shrink-0">
     <div>
       <div class="flex items-center gap-2">
@@ -53,26 +53,26 @@
     </div>
   </header>
 
-  <!-- Main View -->
+  <!-- Main View Container -->
   <main class="flex-1 overflow-hidden">
     
-    <!-- BILLING SECTION -->
+    <!-- 1. Billing & POS Section -->
     <section id="sec-billing" class="h-full grid grid-cols-12 gap-4 p-4 overflow-hidden">
       
-      <!-- Menu Grid & Code Search (Left) -->
+      <!-- Menu Catalog & Code Search (Left Column) -->
       <div class="col-span-7 flex flex-col bg-[#FAF6F0] border border-[#C5A059]/40 p-4 overflow-hidden rounded-sm shadow-sm">
         
         <!-- Live Item Code & Name Search Bar -->
         <div class="mb-3 shrink-0">
           <div class="relative flex items-center">
-            <span class="absolute left-3 text-xs text-[#C5A059] font-bold font-mono">CODE/NAME:</span>
+            <span class="absolute left-3 text-xs text-[#C5A059] font-bold font-mono">SEARCH:</span>
             <input 
               type="text" 
               id="menuSearchInput" 
               oninput="handleMenuSearch(this.value)" 
               onkeydown="handleSearchKeydown(event)"
-              placeholder="Type Item Code (e.g. MO01, MO12) or Name..." 
-              class="w-full bg-[#FDFBF7] border-2 border-[#C5A059] pl-24 pr-8 py-2 text-xs font-bold text-[#58111A] placeholder-gray-400 outline-none focus:border-[#58111A] shadow-xs uppercase"
+              placeholder="Search by Item Code (e.g., MO01) or Name..." 
+              class="w-full bg-[#FDFBF7] border-2 border-[#C5A059] pl-20 pr-8 py-2 text-xs font-bold text-[#58111A] placeholder-gray-400 outline-none focus:border-[#58111A] shadow-xs uppercase"
             >
             <button 
               onclick="clearMenuSearch()" 
@@ -81,7 +81,7 @@
               title="Clear search"
             >✕</button>
           </div>
-          <p class="text-[9px] text-gray-500 mt-1 font-semibold">Tip: Exact item code type karke <kbd class="bg-gray-200 px-1 py-0.5 rounded text-[8px] font-mono">ENTER</kbd> dabane se item sidha cart me add ho jayega.</p>
+          <p class="text-[9px] text-gray-500 mt-1 font-semibold">Tip: Enter exact Item Code and press <kbd class="bg-gray-200 px-1 py-0.5 rounded text-[8px] font-mono">ENTER</kbd> to add directly to order.</p>
         </div>
 
         <!-- Category Tabs -->
@@ -89,13 +89,13 @@
           <button onclick="filterPosCat('ALL')" class="pos-cat-btn bg-[#58111A] text-[#FDFBF7] border border-[#C5A059] px-4 py-1.5 text-xs font-bold uppercase whitespace-nowrap shadow-sm cursor-pointer">All Items</button>
         </div>
 
-        <!-- Items Feed -->
+        <!-- Menu Items Grid -->
         <div id="posMenuList" class="grid grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1 align-content-start">
-          <p class="text-xs text-gray-500 col-span-2 text-center py-10 font-bold">Connecting to Ofbuzz Cloud API...</p>
+          <p class="text-xs text-gray-500 col-span-2 text-center py-10 font-bold">Connecting to Cloud Database...</p>
         </div>
       </div>
 
-      <!-- Current Order & Checkout (Right) -->
+      <!-- Current Order & Checkout Ledger (Right Column) -->
       <div class="col-span-5 flex flex-col bg-[#FDFBF7] border-2 border-[#C5A059] p-4 shadow-sm">
         <div class="flex justify-between items-center border-b border-[#C5A059]/30 pb-2">
           <h2 class="text-base font-bold text-[#58111A] uppercase">Current Order</h2>
@@ -104,9 +104,10 @@
 
         <div class="my-3 flex items-center justify-between bg-[#FAF6F0] p-2 border border-[#C5A059]/30">
           <label class="text-xs font-bold text-[#58111A] uppercase">Table Number:</label>
-          <input type="number" id="posTableNo" placeholder="e.g. 05" class="w-24 border border-[#C5A059] px-2 py-1 text-xs font-bold bg-[#FDFBF7] text-[#58111A] outline-none text-center">
+          <input type="number" id="posTableNo" placeholder="05" class="w-24 border border-[#C5A059] px-2 py-1 text-xs font-bold bg-[#FDFBF7] text-[#58111A] outline-none text-center">
         </div>
 
+        <!-- Active Order Cart -->
         <div id="posCartList" class="flex-1 overflow-y-auto space-y-2 pr-1 border-b border-[#C5A059]/30 py-2">
           <p class="text-xs text-center text-gray-400 py-10 font-bold">No items added to order</p>
         </div>
@@ -126,7 +127,7 @@
       </div>
     </section>
 
-    <!-- DAY MANAGEMENT -->
+    <!-- 2. Day Management Section -->
     <section id="sec-dayend" class="h-full p-8 hidden bg-[#FAF6F0] flex items-center justify-center">
       <div class="bg-[#FDFBF7] border-2 border-[#C5A059] p-6 max-w-md w-full shadow-lg space-y-4">
         <h2 class="text-lg font-bold text-[#58111A] uppercase border-b border-[#C5A059]/40 pb-2">Business Day Closing &amp; Rollover</h2>
@@ -146,7 +147,7 @@
 
   </main>
 
-  <!-- Thermal Print Container -->
+  <!-- 3. Thermal Print Receipt Layout (80mm) -->
   <div id="printableReceipt" class="hidden">
     <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 6px;">
       <h2 style="font-size: 16px; margin: 0; font-weight: bold;">MONCHER</h2>
@@ -156,7 +157,7 @@
     
     <div style="font-size: 10px; margin-bottom: 6px; border-bottom: 1px dashed #000; padding-bottom: 4px;">
       <div style="display: flex; justify-content: space-between;">
-        <span>Order: <b id="prnOrderId">ORD-XXXX</b></span>
+        <span>Order: <b id="prnOrderId">ORD-0000</b></span>
         <span>Table: <b id="prnTable">#00</b></span>
       </div>
       <div style="display: flex; justify-content: space-between;">
@@ -199,9 +200,10 @@
     var currentSearchQuery = "";
     var activeWorkingDate = "";
 
+    // Receive JSONP Payload from Google Apps Script Backend
     window.handleInitialData = function(data) {
       if (!data || !data.menu || data.menu.length === 0) {
-        document.getElementById("posMenuList").innerHTML = "<p class='text-xs text-red-600 col-span-2 text-center py-10 font-bold'>Menu is empty in Google Sheet database.</p>";
+        document.getElementById("posMenuList").innerHTML = "<p class='text-xs text-red-600 col-span-2 text-center py-10 font-bold'>Menu catalog is empty in Google Sheet database.</p>";
         return;
       }
       menuDatabase = data.menu;
@@ -211,6 +213,7 @@
       renderPosMenu();
     };
 
+    // Dynamic Script Injection (Bypasses Browser CORS)
     function fetchMenuFromAPI() {
       var oldScript = document.getElementById("pos-jsonp-script");
       if (oldScript) oldScript.remove();
@@ -219,11 +222,12 @@
       script.id = "pos-jsonp-script";
       script.src = API_URL + "?action=getInitialData&callback=handleInitialData&_t=" + Date.now();
       script.onerror = function() {
-        document.getElementById("posMenuList").innerHTML = "<div class='col-span-2 p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Failed to load data from Ofbuzz Engine.</div>";
+        document.getElementById("posMenuList").innerHTML = "<div class='col-span-2 p-4 text-center bg-red-50 border border-red-200 text-red-700 text-xs font-bold'>Unable to connect to the Ofbuzz POS Engine.</div>";
       };
       document.head.appendChild(script);
     }
 
+    // Build Category Pills Dynamically
     function buildCategoryTabs() {
       var categories = ["ALL"];
       for (var i = 0; i < menuDatabase.length; i++) {
@@ -239,6 +243,7 @@
       }).join("");
     }
 
+    // Tab Switcher between Billing and Day Management
     function switchTab(tab) {
       document.getElementById("sec-billing").classList.toggle("hidden", tab !== "billing");
       document.getElementById("sec-dayend").classList.toggle("hidden", tab !== "dayend");
@@ -252,6 +257,7 @@
         : "px-4 py-1.5 text-xs font-bold uppercase tracking-wider border border-[#C5A059]/40 text-[#58111A] hover:bg-[#FAF6F0] cursor-pointer";
     }
 
+    // Filter Items by Selected Category
     function filterPosCat(cat) {
       currentPosCategory = cat;
       var buttons = document.querySelectorAll(".pos-cat-btn");
@@ -266,7 +272,7 @@
       renderPosMenu();
     }
 
-    // Real-time Item Code / Name Search Handler
+    // Real-time Item Code & Name Search
     function handleMenuSearch(query) {
       currentSearchQuery = query.trim().toUpperCase();
       var btnClear = document.getElementById("btnClearSearch");
@@ -278,7 +284,7 @@
       renderPosMenu();
     }
 
-    // Quick-Add to Cart on Enter key
+    // Press Enter to Add Exact Code Match to Cart
     function handleSearchKeydown(e) {
       if (e.key === "Enter" && currentSearchQuery.length > 0) {
         var exactMatch = menuDatabase.find(function(item) {
@@ -299,6 +305,7 @@
       renderPosMenu();
     }
 
+    // Render Filtered Menu Items
     function renderPosMenu() {
       var container = document.getElementById("posMenuList");
       
@@ -311,7 +318,6 @@
           var nameStr = String(i.name).toUpperCase();
           var catStr = String(i.category).toUpperCase();
 
-          // Code match (starts with or includes) OR Name match OR Category match
           var idMatch = idStr.indexOf(currentSearchQuery) !== -1;
           var nameMatch = nameStr.indexOf(currentSearchQuery) !== -1;
           var catMatch = catStr.indexOf(currentSearchQuery) !== -1;
@@ -323,7 +329,7 @@
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = "<p class='text-xs text-center text-gray-400 col-span-2 py-10 font-bold'>No items match code or name: \"" + currentSearchQuery + "\"</p>";
+        container.innerHTML = "<p class='text-xs text-center text-gray-400 col-span-2 py-10 font-bold'>No items match: \"" + currentSearchQuery + "\"</p>";
         return;
       }
 
@@ -363,6 +369,7 @@
       }).join("");
     }
 
+    // Add Item to Order Cart
     function addPosItem(id) {
       var item = menuDatabase.find(function(i) { return i.id === id; });
       var exist = posCart.find(function(c) { return c.id === id; });
@@ -375,6 +382,7 @@
       renderPosCart();
     }
 
+    // Adjust Item Quantity
     function changePosQty(id, delta) {
       var item = posCart.find(function(c) { return c.id === id; });
       if (!item) return;
@@ -386,6 +394,7 @@
       renderPosCart();
     }
 
+    // Render Order Cart Items & Total
     function renderPosCart() {
       var container = document.getElementById("posCartList");
       if (posCart.length === 0) {
@@ -416,6 +425,7 @@
       document.getElementById("posTotalSum").innerText = "₹" + total.toFixed(2);
     }
 
+    // Reset Order Cart
     function clearPosCart() {
       posCart = [];
       document.getElementById("posTableNo").value = "";
@@ -423,10 +433,11 @@
       renderPosCart();
     }
 
+    // Send Order to Kitchen KDS & Print Receipt
     function sendToKitchen(shouldPrint) {
       var tbl = document.getElementById("posTableNo").value.trim();
-      if (!tbl) { alert("Please enter a Table Number!"); return; }
-      if (posCart.length === 0) { alert("Cart is empty."); return; }
+      if (!tbl) { alert("Please enter a Table Number."); return; }
+      if (posCart.length === 0) { alert("Cart is empty. Please add items."); return; }
 
       var total = posCart.reduce(function(s, c) { return s + (c.price * c.qty); }, 0);
       var btnKds = document.getElementById("btnSendKds");
@@ -470,6 +481,7 @@
       });
     }
 
+    // Trigger Print Receipt Dialog
     function executeReceiptPrint(tableNo, items, total) {
       document.getElementById("prnOrderId").innerText = "ORD-" + Math.floor(1000 + Math.random() * 9000);
       document.getElementById("prnTable").innerText = "#" + tableNo;
@@ -487,17 +499,16 @@
       }).join("");
 
       document.getElementById("prnTotal").innerText = "₹" + total.toFixed(2);
-
-      // Trigger native browser print modal
       window.print();
     }
 
+    // Execute Shift Closing & Date Rollover
     function confirmDayRollover() {
       var nextDate = document.getElementById("nextActiveDate").value;
       var notes = document.getElementById("closingNotes").value;
-      if (!nextDate) { alert("Please select date."); return; }
+      if (!nextDate) { alert("Please select the next working date."); return; }
 
-      if (confirm("Close shift and set working date to " + nextDate + "?")) {
+      if (confirm("Close shift and set active working date to " + nextDate + "?")) {
         fetch(API_URL, {
           method: "POST",
           mode: "no-cors",
